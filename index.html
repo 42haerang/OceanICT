@@ -882,15 +882,16 @@
     }
     .title-cast img {
       position: absolute;
-      bottom: -42px;
-      width: clamp(170px, 24vw, 280px);
-      max-height: 520px;
+      bottom: -18px;
+      width: clamp(150px, 21vw, 248px);
+      max-height: 500px;
       object-fit: contain;
+      object-position: center bottom;
       filter: drop-shadow(0 24px 26px rgba(0,0,0,.62));
       opacity: .86;
     }
-    .title-cast img:nth-child(1) { left: 2%; transform: scaleX(-1); }
-    .title-cast img:nth-child(2) { right: 3%; opacity: .92; }
+    .title-cast img:nth-child(1) { left: clamp(18px, 5vw, 72px); transform: scaleX(-1); }
+    .title-cast img:nth-child(2) { right: clamp(18px, 4vw, 56px); opacity: .92; }
     .title-logo {
       position: relative;
       width: min(640px, 74%);
@@ -1013,6 +1014,28 @@
     .record-board span {
       color: #80fff1;
       font-weight: 900;
+    }
+    .secret-reset {
+      position: absolute;
+      top: 9px;
+      left: 9px;
+      z-index: 5;
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(128,255,241,.16);
+      border-radius: 50%;
+      background: rgba(128,255,241,.06);
+      opacity: .18;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(128,255,241,.08);
+    }
+    .secret-reset:hover,
+    .secret-reset:focus-visible {
+      opacity: .82;
+      border-color: rgba(255,73,106,.7);
+      background: rgba(255,73,106,.28);
+      outline: none;
+      box-shadow: 0 0 18px rgba(255,73,106,.42);
     }
     .run-summary {
       margin: 12px auto 4px;
@@ -1819,6 +1842,27 @@
       }
     }
 
+    async function resetTimeRecords() {
+      try {
+        const db = await openTimeDb();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(TIME_STORE, "readwrite");
+          tx.objectStore(TIME_STORE).clear();
+          tx.oncomplete = () => { db.close(); resolve(); };
+          tx.onerror = () => { db.close(); reject(tx.error); };
+        });
+        state.timeRecords = [];
+        state.runId = "";
+        state.startedAt = 0;
+        state.finishedSaved = false;
+        toast("플레이타임 기록 초기화");
+        render();
+      } catch (err) {
+        console.warn("플레이타임 기록 초기화 실패", err);
+        toast("기록 초기화 실패");
+      }
+    }
+
     function formatDuration(ms) {
       const safe = Math.max(0, Math.round(ms || 0));
       const total = Math.floor(safe / 1000);
@@ -2541,6 +2585,7 @@
       $("#dialogue").textContent = "";
       $("#visualFocus").innerHTML = kind === "title" ? `
         <div class="start-screen title-screen">
+          <button class="secret-reset" id="secretResetBtn" title="기록 초기화" aria-label="기록 초기화"></button>
           <div class="title-cast">
             <img src="${characterImages.detective}" alt="">
             <img src="${characterImages.villain}" alt="">
@@ -2574,6 +2619,13 @@
         </div>`;
       const start = $("#startGameBtn");
       if (start) start.onclick = startRunFromTitle;
+      const reset = $("#secretResetBtn");
+      if (reset) {
+        reset.onclick = async (event) => {
+          event.stopPropagation();
+          await resetTimeRecords();
+        };
+      }
       const nick = $("#nicknameInput");
       if (nick) {
         nick.oninput = () => { state.playerName = cleanNickname(nick.value); };
