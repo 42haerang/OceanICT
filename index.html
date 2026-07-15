@@ -201,6 +201,7 @@
       width: min(720px, 82%);
       height: min(360px, 74%);
       position: relative;
+      overflow: hidden;
       border: 3px solid rgba(128,255,241,.35);
       background:
         radial-gradient(circle at 24% 68%, rgba(255,212,93,.22), transparent 8%),
@@ -554,15 +555,16 @@
       box-shadow: 0 12px 28px rgba(0,0,0,.34);
       cursor: pointer;
       transition: transform .16s ease, border-color .16s ease, filter .16s ease;
-      animation: driftTarget var(--duration, 1.35s) cubic-bezier(.42,0,.58,1) infinite alternate;
+      animation: rushTarget var(--duration, .78s) linear infinite;
       animation-delay: var(--delay, 0s);
+      will-change: translate;
     }
     .scene-object:hover { transform: translateY(-3px) scale(1.04); border-color: var(--amber); }
     .scene-object.real {
       border-color: rgba(255,212,93,.78);
       box-shadow: 0 0 22px rgba(255,212,93,.34), 0 14px 30px rgba(0,0,0,.42);
     }
-    .scene-object.found { filter: grayscale(.8); opacity: .42; pointer-events: none; }
+    .scene-object.found { filter: grayscale(.8); opacity: .42; pointer-events: none; animation: none; }
     .scene-object .tag {
       position: absolute;
       left: 50%;
@@ -627,9 +629,11 @@
       font-weight: 900;
       cursor: pointer;
     }
-    @keyframes driftTarget {
-      from { margin-left: calc(var(--dx, 12px) * -1); margin-top: calc(var(--dy, 8px) * -1); }
-      to { margin-left: var(--dx, 12px); margin-top: var(--dy, 8px); }
+    @keyframes rushTarget {
+      0% { translate: calc(var(--dx, 320px) * -1) calc(var(--dy, 0px) * -1); opacity: 0; }
+      8% { opacity: 1; }
+      92% { opacity: 1; }
+      100% { translate: var(--dx, 320px) var(--dy, 0px); opacity: 0; }
     }
     .current-streak {
       position: absolute;
@@ -1989,25 +1993,25 @@
       const focus = $("#visualFocus");
       if (type === "hotspot") {
         const items = [
-          ["pe", "▰", "노란 PE 조각", 22, 52, true, 48, 13, "-.2s", "1.05s"],
-          ["fiber", "〰", "녹색 로프 섬유", 54, 41, true, -42, 16, "-.8s", ".92s"],
-          ["foam", "◌", "흰색 부표 파편", 74, 62, true, 36, -15, "-.5s", "1.12s"],
-          ["shell", "◒", "조개껍데기", 37, 66, false, -38, -12, "-1.1s", ".88s"],
-          ["leaf", "⌁", "해초 더미", 66, 27, false, 44, 17, "-.4s", ".82s"],
-          ["glass", "◇", "유리 조각", 48, 72, false, -46, 12, "-.9s", "1.0s"],
-          ["cap", "⬡", "병뚜껑 그림자", 43, 30, false, 40, -14, "-1.4s", ".76s"],
-          ["net", "≋", "낡은 그물 매듭", 82, 38, false, -34, 15, "-.7s", ".9s"],
+          ["pe", "▰", "노란 PE 조각", 50, 30, true, 390, 42, "-.18s", ".72s"],
+          ["fiber", "〰", "녹색 로프 섬유", 50, 48, true, -380, 34, "-.55s", ".66s"],
+          ["foam", "◌", "흰색 부표 파편", 50, 66, true, 400, -38, "-.32s", ".82s"],
+          ["shell", "◒", "조개껍데기", 50, 38, false, -410, -26, "-.08s", ".58s"],
+          ["leaf", "⌁", "해초 더미", 50, 56, false, 420, 28, "-.62s", ".62s"],
+          ["glass", "◇", "유리 조각", 50, 74, false, -390, 22, "-.4s", ".76s"],
+          ["cap", "⬡", "병뚜껑 그림자", 50, 24, false, 370, -32, "-.75s", ".54s"],
+          ["net", "≋", "낡은 그물 매듭", 50, 82, false, -430, 30, "-.25s", ".68s"],
         ];
         const hitCount = ["pe", "fiber", "foam"].filter(id => state.found.has(id)).length;
         focus.innerHTML = `<div class="beach-board">
-          ${[18,31,44,57,70].map((top, i) => `<i class="current-streak" style="top:${top}%;--speed:${.72 + i * .12}s;--delay:-${i * .18}s"></i>`).join("")}
+          ${[14,24,34,44,54,64,74,84].map((top, i) => `<i class="current-streak" style="top:${top}%;--speed:${.32 + i * .035}s;--delay:-${i * .09}s"></i>`).join("")}
           <div class="scanner-hud">
-            <span class="timer">남은 시간 ${state.sceneTime}s</span>
+            <span class="timer" id="sceneTimeHud">남은 시간 ${state.sceneTime}s</span>
             <span>탐지탄 ${state.sceneShots}/9</span>
             <span>명중 ${hitCount}/3</span>
             <span>콤보 x${Math.max(1, state.sceneCombo || 0)}</span>
             <span>점수 ${state.sceneScore}</span>
-            <span class="danger">오염도 ${state.scenePollution}%</span>
+            <span class="danger" id="scenePollutionHud">오염도 ${state.scenePollution}%</span>
             ${state.sceneShots <= 0 && hitCount < 3 ? `<button id="reloadScanner">재장전</button>` : ""}
           </div>
           ${items.map(([id, icon, label, left, top, real, dx, dy, delay, duration]) => `
@@ -2242,11 +2246,15 @@
         if (state.sceneTime > 0) {
           state.sceneTime -= 1;
           if (state.sceneTime % 4 === 0) state.scenePollution = Math.min(99, state.scenePollution + 1);
-          render();
+          const timeHud = $("#sceneTimeHud");
+          const pollutionHud = $("#scenePollutionHud");
+          if (timeHud) timeHud.textContent = `남은 시간 ${state.sceneTime}s`;
+          if (pollutionHud) pollutionHud.textContent = `오염도 ${state.scenePollution}%`;
         } else {
           state.sceneCombo = 0;
           state.trust = Math.max(0, state.trust - 1);
-          render();
+          const timeHud = $("#sceneTimeHud");
+          if (timeHud) timeHud.textContent = "남은 시간 0s";
         }
       }, 1000);
     }
