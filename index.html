@@ -210,7 +210,7 @@
       box-shadow: inset 0 0 60px rgba(0,0,0,.32), 0 22px 60px rgba(0,0,0,.42);
     }
     .beach-board::before {
-      content: "동백섬 표착 구역 - 빛나는 원을 조사";
+      content: "동백섬 표착 구역 - 표류물을 조준해 스캔";
       position: absolute;
       left: 18px;
       top: 14px;
@@ -218,6 +218,20 @@
       font-weight: 900;
       font-size: 15px;
       text-shadow: 0 2px #000;
+    }
+    .beach-board::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 86px;
+      height: 86px;
+      border: 1px dashed rgba(128,255,241,.48);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 28px rgba(40,212,232,.2);
+      pointer-events: none;
+      animation: scanPulse 1.8s ease-in-out infinite;
     }
     .character-row {
       position: absolute;
@@ -540,6 +554,8 @@
       box-shadow: 0 12px 28px rgba(0,0,0,.34);
       cursor: pointer;
       transition: transform .16s ease, border-color .16s ease, filter .16s ease;
+      animation: driftTarget 3.6s ease-in-out infinite alternate;
+      animation-delay: var(--delay, 0s);
     }
     .scene-object:hover { transform: translateY(-3px) scale(1.04); border-color: var(--amber); }
     .scene-object.real {
@@ -560,6 +576,57 @@
       color: var(--muted);
       font-size: 10px;
       font-weight: 800;
+    }
+    .scene-object::after {
+      content: "";
+      position: absolute;
+      inset: -9px;
+      border: 1px solid rgba(128,255,241,0);
+      border-radius: 50%;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+    .scene-object:hover::after {
+      border-color: rgba(128,255,241,.85);
+      box-shadow: 0 0 20px rgba(40,212,232,.36);
+    }
+    .scanner-hud {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 14px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: #f7fdff;
+      font-size: 11px;
+      font-weight: 900;
+      text-shadow: 0 2px 6px rgba(0,0,0,.75);
+      pointer-events: none;
+    }
+    .scanner-hud span {
+      padding: 5px 8px;
+      border: 1px solid rgba(128,255,241,.32);
+      background: rgba(4,14,20,.62);
+    }
+    .scanner-hud button {
+      pointer-events: auto;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,212,93,.7);
+      background: rgba(255,212,93,.18);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    @keyframes driftTarget {
+      from { margin-left: calc(var(--dx, 12px) * -1); margin-top: calc(var(--dy, 8px) * -1); }
+      to { margin-left: var(--dx, 12px); margin-top: var(--dy, 8px); }
+    }
+    @keyframes scanPulse {
+      0%, 100% { opacity: .38; transform: translate(-50%, -50%) scale(.92); }
+      50% { opacity: .9; transform: translate(-50%, -50%) scale(1.08); }
     }
     .report-layout { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 18px; }
     .target-list {
@@ -1633,6 +1700,9 @@
       finishedSaved: false,
       timeRecords: [],
       focusSlider: "",
+      sceneShots: 9,
+      sceneScore: 0,
+      sceneCombo: 0,
     });
 
     const sceneBackgrounds = {
@@ -1865,26 +1935,56 @@
       const focus = $("#visualFocus");
       if (type === "hotspot") {
         const items = [
-          ["pe", "▰", "노란 PE 조각", 22, 52, true],
-          ["fiber", "〰", "녹색 로프 섬유", 54, 41, true],
-          ["foam", "◌", "흰색 부표 파편", 74, 62, true],
-          ["shell", "◒", "조개껍데기", 37, 66, false],
-          ["leaf", "⌁", "해초 더미", 66, 27, false],
-          ["glass", "◇", "유리 조각", 48, 72, false],
+          ["pe", "▰", "노란 PE 조각", 22, 52, true, 12, 6, "-.2s"],
+          ["fiber", "〰", "녹색 로프 섬유", 54, 41, true, -10, 9, "-1.1s"],
+          ["foam", "◌", "흰색 부표 파편", 74, 62, true, 8, -7, "-.7s"],
+          ["shell", "◒", "조개껍데기", 37, 66, false, -9, -5, "-1.8s"],
+          ["leaf", "⌁", "해초 더미", 66, 27, false, 11, 8, "-.5s"],
+          ["glass", "◇", "유리 조각", 48, 72, false, -12, 6, "-1.4s"],
+          ["cap", "⬡", "병뚜껑 그림자", 43, 30, false, 9, -6, "-2.2s"],
+          ["net", "≋", "낡은 그물 매듭", 82, 38, false, -8, 7, "-.9s"],
         ];
-        focus.innerHTML = `<div class="beach-board">${items.map(([id, icon, label, left, top, real]) => `
-          <button class="scene-object ${real ? "real" : ""} ${state.found.has(id) ? "found" : ""}" data-scene-clue="${id}" data-real="${real}" style="left:${left}%;top:${top}%">
+        const hitCount = ["pe", "fiber", "foam"].filter(id => state.found.has(id)).length;
+        focus.innerHTML = `<div class="beach-board">
+          <div class="scanner-hud">
+            <span>탐지탄 ${state.sceneShots}/9</span>
+            <span>명중 ${hitCount}/3</span>
+            <span>콤보 x${Math.max(1, state.sceneCombo || 0)}</span>
+            <span>점수 ${state.sceneScore}</span>
+            ${state.sceneShots <= 0 && hitCount < 3 ? `<button id="reloadScanner">재장전</button>` : ""}
+          </div>
+          ${items.map(([id, icon, label, left, top, real, dx, dy, delay]) => `
+          <button class="scene-object ${real ? "real" : ""} ${state.found.has(id) ? "found" : ""}" data-scene-clue="${id}" data-real="${real}" style="left:${left}%;top:${top}%;--dx:${dx}px;--dy:${dy}px;--delay:${delay}">
             ${icon}<span class="tag">${label}</span>
           </button>`).join("")}</div>`;
+        const reload = $("#reloadScanner");
+        if (reload) reload.onclick = () => {
+          state.sceneShots = 9;
+          state.sceneCombo = 0;
+          state.trust = Math.max(0, state.trust - 3);
+          toast("탐지탄 재장전. 신뢰도 -3");
+          render();
+        };
         focus.querySelectorAll("[data-scene-clue]").forEach(btn => {
           btn.onclick = () => {
             const id = btn.dataset.sceneClue;
+            if (state.found.has(id)) return;
+            if (state.sceneShots <= 0) {
+              toast("탐지탄이 없습니다. 재장전하세요.");
+              return;
+            }
+            state.sceneShots -= 1;
             if (btn.dataset.real === "true") {
+              state.sceneCombo = (state.sceneCombo || 0) + 1;
+              state.sceneScore += 100 + state.sceneCombo * 25;
               const msg = { pe:"노란 PE 조각 확보", fiber:"녹색 로프 섬유 확보", foam:"흰색 부표 파편 확보" }[id];
               collect(id, msg);
             } else {
+              state.sceneCombo = 0;
+              state.sceneScore = Math.max(0, state.sceneScore - 30);
               state.trust = Math.max(0, state.trust - 2);
-              toast("관련 없는 물체입니다. 증거판에는 올리지 않습니다.");
+              toast("헛스캔입니다. 점수 -30, 신뢰도 -2");
+              render();
             }
           };
         });
@@ -1948,13 +2048,13 @@
             <p class="brief">왼쪽 물질을 고른 뒤 오른쪽 이동 특성을 누르세요. 3개가 맞으면 법정 제출용 분석표가 완성됩니다.</p>
             <div class="match-lab">
               <div class="match-stack">
-                ${["PE","PET","PP"].map(p => `<button class="match-card ${state.selectedPolymer === p ? "selected" : ""} ${state.matches[p] ? "done" : ""}" data-polymer="${p}">${p}</button>`).join("")}
+                ${["PET","PP","PE"].map(p => `<button class="match-card ${state.selectedPolymer === p ? "selected" : ""} ${state.matches[p] ? "done" : ""}" data-polymer="${p}">${p}</button>`).join("")}
               </div>
               <div class="trait-stack">
                 ${[
+                  ["PP","부표 파편과 맞는 낮은 밀도·강한 부력"],
                   ["PE","물 위에 떠서 북서풍 영향을 크게 받음"],
-                  ["PET","상대적으로 가라앉아 해류 영향이 큼"],
-                  ["PP","부표 파편과 맞는 낮은 밀도·강한 부력"]
+                  ["PET","상대적으로 가라앉아 해류 영향이 큼"]
                 ].map(([id, text]) => `<button class="match-card ${Object.values(state.matches).includes(id) ? "done" : ""}" data-trait="${id}">${text}</button>`).join("")}
               </div>
             </div>
@@ -2001,7 +2101,7 @@
     renderPuzzle = function(type) {
       const box = $("#puzzleArea");
       if (type === "hotspot") {
-        box.innerHTML = `<h3>현장 단서 찾기</h3><p class="brief">반짝이는 쓰레기 중 진짜 증거 3개를 찾으세요. 헛단서는 신뢰도를 조금 낮춥니다.</p>`;
+        box.innerHTML = `<h3>스캐너 슈팅 수색</h3><p class="brief">움직이는 표류물을 조준해 탐지탄으로 스캔하세요. 진짜 증거 3개를 맞히면 증거판에 등록되고, 헛스캔은 점수와 신뢰도를 깎습니다.</p>`;
       } else if (type === "document") {
         box.innerHTML = `<h3>보고서 수치 수색</h3><p class="brief">오른쪽 목표값 3개를 보고, 중앙 보고서 본문에서 같은 수치를 직접 찾아 누르세요. 이 값을 찾아야 역추적 화면으로 넘어갑니다.</p>`;
       } else if (type === "vector") {
