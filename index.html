@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -1014,28 +1014,6 @@
     .record-board span {
       color: #80fff1;
       font-weight: 900;
-    }
-    .secret-reset {
-      position: absolute;
-      top: 9px;
-      left: 9px;
-      z-index: 5;
-      width: 16px;
-      height: 16px;
-      border: 1px solid rgba(128,255,241,.16);
-      border-radius: 50%;
-      background: rgba(128,255,241,.06);
-      opacity: .18;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(128,255,241,.08);
-    }
-    .secret-reset:hover,
-    .secret-reset:focus-visible {
-      opacity: .82;
-      border-color: rgba(255,73,106,.7);
-      background: rgba(255,73,106,.28);
-      outline: none;
-      box-shadow: 0 0 18px rgba(255,73,106,.42);
     }
     .run-summary {
       margin: 12px auto 4px;
@@ -2385,6 +2363,12 @@
     async function startRunFromTitle() {
       const input = $("#nicknameInput");
       const nickname = cleanNickname(input?.value);
+      if (nickname === "꿇뚫") {
+        if (input) input.value = "";
+        state.playerName = "";
+        await resetTimeRecords();
+        return;
+      }
       if (!nickname) {
         toast("닉네임을 입력해야 사건 기록이 시작됩니다.");
         input?.focus();
@@ -2585,7 +2569,6 @@
       $("#dialogue").textContent = "";
       $("#visualFocus").innerHTML = kind === "title" ? `
         <div class="start-screen title-screen">
-          <button class="secret-reset" id="secretResetBtn" title="기록 초기화" aria-label="기록 초기화"></button>
           <div class="title-cast">
             <img src="${characterImages.detective}" alt="">
             <img src="${characterImages.villain}" alt="">
@@ -2619,13 +2602,6 @@
         </div>`;
       const start = $("#startGameBtn");
       if (start) start.onclick = startRunFromTitle;
-      const reset = $("#secretResetBtn");
-      if (reset) {
-        reset.onclick = async (event) => {
-          event.stopPropagation();
-          await resetTimeRecords();
-        };
-      }
       const nick = $("#nicknameInput");
       if (nick) {
         nick.oninput = () => { state.playerName = cleanNickname(nick.value); };
