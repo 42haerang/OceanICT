@@ -267,6 +267,18 @@
       object-fit: contain;
       object-position: bottom center;
     }
+    .character.character-detective img {
+      transform: scaleX(1.06);
+      transform-origin: center bottom;
+    }
+    .character.character-analyst {
+      width: clamp(170px, 20vw, 238px);
+    }
+    .character.character-suspect,
+    .character.character-villain,
+    .character.character-judge {
+      width: clamp(165px, 19vw, 230px);
+    }
     .character.dim { display: none; }
     .character.active { transform: translateY(-8px) scale(1.05); }
     body.investigation-mode .visual-focus {
@@ -295,6 +307,12 @@
     body.investigation-mode .character {
       width: clamp(270px, 34vw, 430px);
       filter: drop-shadow(0 22px 26px rgba(0,0,0,.52));
+    }
+    body.investigation-mode .character.character-detective {
+      width: clamp(280px, 35vw, 420px);
+    }
+    body.investigation-mode .character.character-analyst {
+      width: clamp(290px, 36vw, 430px);
     }
     body.investigation-mode .character img {
       max-height: min(700px, calc(100vh - 190px));
@@ -570,6 +588,12 @@
     }
     body.court-mode .character {
       width: clamp(220px, 30vw, 330px);
+    }
+    body.court-mode .character.character-detective {
+      width: clamp(230px, 29vw, 320px);
+    }
+    body.court-mode .character.character-analyst {
+      width: clamp(240px, 31vw, 340px);
     }
     body.court-mode .character-row.side-left {
       justify-content: flex-start;
@@ -998,9 +1022,9 @@
     }
     .title-cast img:nth-child(1) {
       left: clamp(22px, 5vw, 74px);
-      bottom: -84px;
-      height: clamp(520px, 78vh, 700px);
-      max-width: min(36vw, 360px);
+      bottom: -46px;
+      height: clamp(430px, 65vh, 585px);
+      max-width: min(38vw, 390px);
       transform: scaleX(-1);
     }
     .title-cast img:nth-child(2) {
@@ -1302,6 +1326,8 @@
       overflow: hidden;
     }
     .codex-thumb img { width: auto; height: 42px; max-width: 42px; object-fit: contain; object-position: bottom center; }
+    .codex-thumb img.portrait-detective { height: 38px; transform: scaleX(1.06); }
+    .codex-thumb img.portrait-analyst { height: 44px; }
     .codex-detail {
       min-height: 0;
       display: grid;
@@ -1320,6 +1346,21 @@
       place-items: end center;
     }
     .codex-portrait img { width: auto; height: auto; max-width: 78%; max-height: 96%; object-fit: contain; object-position: bottom center; }
+    .codex-portrait img.portrait-detective {
+      max-height: 89%;
+      max-width: 88%;
+      transform: scaleX(1.06);
+    }
+    .codex-portrait img.portrait-analyst {
+      max-height: 94%;
+      max-width: 86%;
+    }
+    .codex-portrait img.portrait-villain,
+    .codex-portrait img.portrait-suspect,
+    .codex-portrait img.portrait-judge {
+      max-height: 94%;
+      max-width: 88%;
+    }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
     .codex-desc { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; word-break: keep-all; }
@@ -1501,8 +1542,8 @@
     };
 
     const characterImages = {
-      detective: "assets/hanbada-detective-v3.png",
-      analyst: "assets/yunseo-analyst-v6.png",
+      detective: "assets/hanbada-detective-v4.png",
+      analyst: "assets/yunseo-analyst-v7.png",
       suspect: "assets/port-manager-v3.png",
       villain: "assets/doyun-villain-v2.png",
       judge: "assets/judge-v2.png"
@@ -1637,6 +1678,8 @@
       if (active === "suspect" || active === "villain") focus?.classList.add("for-right");
       Object.entries(map).forEach(([id, type]) => {
         const el = $("#" + id);
+        el.classList.remove("character-detective", "character-analyst", "character-suspect", "character-villain", "character-judge");
+        el.classList.add(`character-${type}`);
         el.innerHTML = `<img src="${characterImages[type]}" alt="${type}">`;
         el.classList.toggle("active", type === active);
         el.classList.toggle("dim", type !== active);
@@ -1654,11 +1697,11 @@
       $("#codexToggle").textContent = state.codexOpen ? "도감 닫기" : "캐릭터 도감";
       $("#codexList").innerHTML = characterProfiles.map(item => `
         <button class="codex-tab ${item.id === selected.id ? "active" : ""}" data-codex="${item.id}" type="button">
-          <span class="codex-thumb"><img src="${characterImages[item.id]}" alt=""></span>
+          <span class="codex-thumb"><img class="portrait-${item.id}" src="${characterImages[item.id]}" alt=""></span>
           <span>${item.name}</span>
         </button>`).join("");
       $("#codexDetail").innerHTML = `
-        <div class="codex-portrait"><img src="${characterImages[selected.id]}" alt="${selected.name}"></div>
+        <div class="codex-portrait"><img class="portrait-${selected.id}" src="${characterImages[selected.id]}" alt="${selected.name}"></div>
         <div>
           <h3 class="codex-name">${selected.name}</h3>
           <p class="codex-role">${selected.role}</p>
@@ -2917,8 +2960,8 @@
       $("#visualFocus").innerHTML = kind === "title" ? `
         <div class="start-screen title-screen">
           <div class="title-cast">
-            <img src="${characterImages.detective}" alt="">
-            <img src="${characterImages.villain}" alt="">
+            <img class="portrait-detective" src="${characterImages.detective}" alt="">
+            <img class="portrait-villain" src="${characterImages.villain}" alt="">
           </div>
           <div class="title-logo">
             <span class="case-no">BUSAN ENVIRONMENT COURT / CASE 2035-BGS</span>
