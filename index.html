@@ -1934,6 +1934,7 @@
       runId: "",
       startedAt: 0,
       playDurationMs: 0,
+      penaltyMs: 0,
       finishedSaved: false,
       timeRecords: [],
       codexOpen: false,
@@ -2032,6 +2033,11 @@
       const seconds = total % 60;
       const tenths = Math.floor((safe % 1000) / 100);
       return minutes > 0 ? `${minutes}분 ${String(seconds).padStart(2, "0")}초` : `${seconds}.${tenths}초`;
+    }
+
+    function currentRunDuration() {
+      if (state.playDurationMs) return state.playDurationMs;
+      return (state.startedAt ? Date.now() - state.startedAt : 0) + state.penaltyMs;
     }
 
     function cleanNickname(name) {
@@ -2328,7 +2334,7 @@
           <div class="ending-card">
             <span class="win-title">승소!</span>
             <h2>판결 선고 완료</h2>
-            <div class="run-summary">${state.playerName || "익명"} 수사관 기록: ${formatDuration(state.playDurationMs || (state.startedAt ? Date.now() - state.startedAt : 0))}</div>
+            <div class="run-summary">${state.playerName || "익명"} 수사관 기록: ${formatDuration(currentRunDuration())} ${state.penaltyMs ? `(패소 페널티 +${Math.round(state.penaltyMs / 1000)}초)` : ""}</div>
             <p>현재의 미세플라스틱 흔적을 거꾸로 읽어 오염원의 과거를 복원했습니다. 기장 양식장 주변 폐부표 관리 실패와 기록 은폐 가능성이 인정되었습니다.</p>
             <div class="ending-grid">
               <div><strong>기장 양식장</strong><br>62%</div>
@@ -2560,9 +2566,10 @@
         }
       } else {
         state.proofMistakes += 1;
+        state.penaltyMs += 10000;
         state.trust = Math.max(0, state.trust - 7);
-        showVerdictFlash("패소!");
-        toast(option?.wrong || "그 증거만으로는 반박을 뚫지 못합니다.");
+        showVerdictFlash("패소! +10초");
+        toast(`${option?.wrong || "그 증거만으로는 반박을 뚫지 못합니다."} 플레이타임 +10초`);
       }
       render();
     };
@@ -2593,6 +2600,7 @@
       state.playerName = nickname;
       state.startedAt = Date.now();
       state.playDurationMs = 0;
+      state.penaltyMs = 0;
       state.finishedSaved = false;
       state.runId = (crypto?.randomUUID?.() || `run-${state.startedAt}-${Math.random().toString(16).slice(2)}`);
       try {
@@ -2616,7 +2624,7 @@
       if (state.finishedSaved || !state.runId || !state.startedAt) return;
       state.finishedSaved = true;
       const finishedAt = Date.now();
-      state.playDurationMs = finishedAt - state.startedAt;
+      state.playDurationMs = finishedAt - state.startedAt + state.penaltyMs;
       try {
         await saveTimeRecord({
           id: state.runId,
