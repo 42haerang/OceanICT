@@ -960,9 +960,10 @@
     }
     .title-cast img {
       position: absolute;
-      bottom: -24px;
-      width: clamp(190px, 25vw, 315px);
-      max-height: 530px;
+      bottom: -12px;
+      height: clamp(355px, 58vh, 520px);
+      width: auto;
+      max-width: min(34vw, 330px);
       object-fit: contain;
       object-position: center bottom;
       filter: drop-shadow(0 24px 26px rgba(0,0,0,.62));
@@ -1143,7 +1144,7 @@
     @media (max-width: 720px) {
       .title-screen { min-height: 540px; width: min(96%, 980px); padding: 22px 12px; }
       .title-logo { width: 92%; }
-      .title-cast img { width: 155px; opacity: .5; }
+      .title-cast img { height: 330px; max-width: 34vw; opacity: .5; }
       .title-file,
       .record-board { display: none; }
       .title-login { grid-template-columns: 1fr; }
@@ -1261,7 +1262,7 @@
       place-items: end center;
       overflow: hidden;
     }
-    .codex-thumb img { max-width: 40px; max-height: 44px; object-fit: contain; object-position: bottom center; }
+    .codex-thumb img { width: auto; height: 42px; max-width: 42px; object-fit: contain; object-position: bottom center; }
     .codex-detail {
       min-height: 0;
       display: grid;
@@ -1279,7 +1280,7 @@
       display: grid;
       place-items: end center;
     }
-    .codex-portrait img { max-width: 360px; max-height: 440px; object-fit: contain; object-position: bottom center; }
+    .codex-portrait img { width: auto; height: min(430px, 100%); max-width: 88%; object-fit: contain; object-position: bottom center; }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
     .codex-desc { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; word-break: keep-all; }
@@ -1289,7 +1290,7 @@
       .codex-body { grid-template-columns: 1fr; }
       .codex-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .codex-detail { grid-template-rows: minmax(260px, 40vh) auto auto; }
-      .codex-portrait img { max-width: 280px; max-height: 350px; }
+      .codex-portrait img { height: min(340px, 100%); max-width: 86%; }
     }
   </style>
 </head>
