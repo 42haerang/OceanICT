@@ -1188,8 +1188,8 @@
       position: fixed;
       right: 18px;
       bottom: 72px;
-      width: min(430px, calc(100vw - 28px));
-      max-height: min(650px, calc(100vh - 96px));
+      width: min(620px, calc(100vw - 28px));
+      max-height: min(760px, calc(100vh - 96px));
       z-index: 59;
       display: none;
       grid-template-rows: auto minmax(0, 1fr);
@@ -1219,9 +1219,9 @@
     .codex-body {
       min-height: 0;
       display: grid;
-      grid-template-columns: 126px 1fr;
-      gap: 12px;
-      padding: 12px;
+      grid-template-columns: 138px 1fr;
+      gap: 16px;
+      padding: 14px;
       overflow: hidden;
     }
     .codex-list {
@@ -1259,8 +1259,8 @@
     .codex-detail {
       min-height: 0;
       display: grid;
-      grid-template-rows: 190px auto auto;
-      gap: 10px;
+      grid-template-rows: minmax(340px, 42vh) auto auto;
+      gap: 12px;
       overflow: auto;
     }
     .codex-portrait {
@@ -1273,7 +1273,7 @@
       display: grid;
       place-items: end center;
     }
-    .codex-portrait img { max-width: 190px; max-height: 210px; object-fit: contain; object-position: bottom center; }
+    .codex-portrait img { max-width: 360px; max-height: 440px; object-fit: contain; object-position: bottom center; }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
     .codex-desc { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; word-break: keep-all; }
@@ -1282,7 +1282,8 @@
       .codex-toggle { right: 10px; bottom: 10px; }
       .codex-body { grid-template-columns: 1fr; }
       .codex-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .codex-detail { grid-template-rows: 160px auto auto; }
+      .codex-detail { grid-template-rows: minmax(260px, 40vh) auto auto; }
+      .codex-portrait img { max-width: 280px; max-height: 350px; }
     }
   </style>
 </head>
