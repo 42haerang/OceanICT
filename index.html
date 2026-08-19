@@ -1410,7 +1410,7 @@
       {
         kind: "문서 감식",
         name: "기상청 실시간 관측 기록",
-        speaker: "윤서",
+        speaker: "수민",
         who: "analyst",
         line: "“문장 속에 필요한 조건이 숨어 있어. 바람, 비, 날짜를 잘못 읽으면 완전히 다른 범인이 나와.”",
         mission: ["기상 문서에서 핵심 표현 3개 표시", "표층 이동 보정 근거 확보"],
@@ -1419,7 +1419,7 @@
       {
         kind: "해류 퍼즐",
         name: "라그랑주 역추적 계산",
-        speaker: "윤서",
+        speaker: "수민",
         who: "analyst",
         line: "“현재 위치에서 시간을 되감아. 순서를 맞춰야 입자가 엉뚱한 항만으로 튀지 않아.”",
         mission: ["역추적 연산 순서 맞추기", "D-45 후보지 수렴 확인"],
@@ -1437,7 +1437,7 @@
       {
         kind: "심리",
         name: "부산 연안 환경 법정",
-        speaker: "항만 관리자",
+        speaker: "탁민재",
         who: "suspect",
         line: "“항만에서 나온 거라는 증거 있습니까? 바다는 원래 복잡하게 흐릅니다.”",
         mission: ["올바른 증거 제시", "오염원 후보 판정"],
@@ -1477,13 +1477,13 @@
       },
       {
         id: "analyst",
-        name: "윤서",
+        name: "수민",
         role: "해류 데이터 분석관",
         desc: "풍향, 해류, 확산 오차를 정리해 수사 방향을 잡아주는 분석 담당. 보고서 속 숫자가 왜 중요한지 법정에서 과학적으로 증명한다."
       },
       {
         id: "suspect",
-        name: "항만 관리자",
+        name: "탁민재",
         role: "부산항 야간 작업 책임자",
         desc: "항만 배출 가능성을 부정하지만 일부 기록과 현장 진술이 엇갈린다. 플레이어가 단서의 한계와 모순을 구분해야 하는 중간 증인."
       },
@@ -1495,7 +1495,7 @@
       },
       {
         id: "judge",
-        name: "재판장",
+        name: "강해란",
         role: "부산환경법정 재판장",
         desc: "증거의 과학적 타당성을 기준으로 판정을 내리는 인물. 최종적으로 오염원 후보 확률과 차단 대책을 정리한다."
       }
@@ -1503,7 +1503,7 @@
 
     const trialScenes = [
       {
-        speaker: "재판장",
+        speaker: "강해란",
         who: "analyst",
         line: "부산환경법정을 개정합니다. 본 심리는 해운대 미세플라스틱 반복 표착 사건의 오염원 후보를 판정하기 위한 과학 심리입니다.",
         choices: [{ text: "변호 측, 조사 결과를 진술하십시오.", next: 1 }]
@@ -1521,13 +1521,13 @@
         proof: true
       },
       {
-        speaker: "윤서",
+        speaker: "수민",
         who: "analyst",
         line: "북서풍은 표층 PE 조각을 밀었고, 폭우 유출은 하천 부유물 농도를 급증시켰습니다. 역류 벡터를 거꾸로 적용하면 입자는 낙동강 하구로 수렴합니다.",
         choices: [{ text: "최종 판결을 요청한다.", next: 4 }]
       },
       {
-        speaker: "재판장",
+        speaker: "강해란",
         who: "analyst",
         line: "판정합니다. 낙동강 하구 유입 가능성 60%, 부산항 31%, 기장 양식장 5%, 기타 4%. 하천 필터와 폭우 시기 부유물 회수 명령을 권고합니다.",
         choices: [{ text: "사건 기록을 보존한다.", end: true }]
@@ -1603,7 +1603,7 @@
       });
       const miniType = active === "judge" ? "judge" : active === "villain" ? "villain" : active === "suspect" ? "suspect" : active === "analyst" ? "analyst" : "detective";
       $("#miniAvatar").innerHTML = `<img src="${characterImages[miniType]}" alt="">`;
-      $("#activeName").textContent = active === "judge" ? "재판장" : active === "villain" ? "류도윤" : active === "analyst" ? "윤서" : active === "suspect" ? "항만 관리자" : "한바다";
+      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "analyst" ? "수민" : active === "suspect" ? "탁민재" : "한바다";
       $("#activeRole").textContent = active === "judge" ? "부산환경법정 재판장" : active === "villain" ? "해운물류그룹 배후 총책" : active === "analyst" ? "해류 데이터 분석관" : active === "suspect" ? "부산항 야간 작업 책임자" : "해양환경수사국 학생 탐정";
     }
 
@@ -1804,7 +1804,7 @@
       } else {
         box.innerHTML = `
           <h3>심리 선택</h3>
-          <p class="brief">항만 관리자의 반박을 무너뜨릴 증거 조합을 선택하세요.</p>
+          <p class="brief">탁민재의 반박을 무너뜨릴 증거 조합을 선택하세요.</p>
           <div class="mini-buttons">
             <button data-trial="port">항만 로프 조각</button>
             <button data-trial="river">북서풍 + 폭우 유출 + 역류 벡터</button>
@@ -2172,7 +2172,7 @@
 
     trialScenes.splice(0, trialScenes.length,
       {
-        speaker: "재판장",
+        speaker: "강해란",
         who: "judge",
         line: "부산환경법정 제1심리를 개정합니다. 본 사건은 해운대 반복 표착 플라스틱의 실제 유입원을 가리는 과학 심리입니다.",
         choices: [{ text: "수사 결과를 진술한다.", next: 1 }]
@@ -2184,7 +2184,7 @@
         choices: [{ text: "보고서 증거를 이어서 제시한다.", next: 2 }]
       },
       {
-        speaker: "항만 관리자",
+        speaker: "탁민재",
         who: "suspect",
         line: "잠깐만요. 녹색 로프 섬유가 나왔다면 부산항 장비를 먼저 의심해야 하는 것 아닙니까? 우리 작업장에도 비슷한 섬유는 많습니다.",
         choices: [{ text: "항만 단서의 한계를 확인한다.", next: 3 }]
@@ -2196,7 +2196,7 @@
         choices: [{ text: "이의 있음! 조건을 하나씩 검증한다.", objection: true, next: 4 }]
       },
       {
-        speaker: "윤서",
+        speaker: "수민",
         who: "analyst",
         line: "항만 섬유는 혼동 단서입니다. 염분 마모와 부력 패턴은 항만 로프보다 폐부표 외피에 가깝습니다. D-24 보고서의 북서풍, 폭우 유출, 양식장 부표 파편을 함께 봐야 합니다.",
         choices: [{ text: "역추적 시뮬레이션 결과를 부른다.", next: 5 }]
@@ -2214,7 +2214,7 @@
         proof: true
       },
       {
-        speaker: "윤서",
+        speaker: "수민",
         who: "analyst",
         line: "폴리머 매칭도 일치합니다. PE는 표층 바람에 민감했고, PP 부표 파편은 양식장 부표 외피와 부력·마모 패턴이 같습니다.",
         choices: [{ text: "은폐 정황을 추궁한다.", next: 8 }]
@@ -2232,7 +2232,7 @@
         choices: [{ text: "판결을 요청한다.", next: 10 }]
       },
       {
-        speaker: "재판장",
+        speaker: "강해란",
         who: "judge",
         line: "본 법정은 기장 양식장 주변 폐부표 관리 실패와 기록 은폐 가능성이 가장 높다고 판단합니다. 오염 차단 명령과 추가 조사를 선고합니다.",
         choices: [{ text: "최종 결과 화면 보기", end: true }]
