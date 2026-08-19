@@ -266,7 +266,7 @@
     .character.active { transform: translateY(-8px) scale(1.05); }
     body.investigation-mode .visual-focus {
       inset: 56px 30px 158px 30px;
-      z-index: 2;
+      z-index: 4;
     }
     body.investigation-mode .visual-focus.for-right .focus-card,
     body.investigation-mode .visual-focus.for-right .beach-board { margin-left: clamp(150px, 23vw, 310px); }
@@ -281,21 +281,24 @@
       height: min(390px, 78%);
     }
     body.investigation-mode .character-row {
-      bottom: 4px;
+      bottom: 126px;
       height: calc(100% - 72px);
-      z-index: 3;
+      z-index: 2;
     }
     body.investigation-mode .character-row.side-left { padding-left: clamp(4px, 2vw, 24px); }
     body.investigation-mode .character-row.side-right { padding-right: clamp(4px, 2vw, 24px); }
     body.investigation-mode .character {
       width: clamp(270px, 34vw, 430px);
+      height: clamp(270px, 44vh, 390px);
+      overflow: hidden;
       filter: drop-shadow(0 22px 26px rgba(0,0,0,.52));
     }
     body.investigation-mode .character img {
       max-height: min(700px, calc(100vh - 190px));
+      object-position: top center;
     }
     body.investigation-mode .character.active {
-      transform: translateY(72px) scale(1.14);
+      transform: translateY(18px) scale(1.08);
     }
     body.investigation-mode .dialogue {
       z-index: 20;
@@ -322,6 +325,7 @@
       }
       body.investigation-mode .character {
         width: clamp(220px, 48vw, 340px);
+        height: clamp(235px, 40vh, 330px);
         opacity: .9;
       }
     }
