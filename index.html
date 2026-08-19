@@ -1018,7 +1018,7 @@
     }
     .title-cast img:nth-child(1) {
       left: clamp(4px, 3.5vw, 44px);
-      top: clamp(24px, 3vh, 34px);
+      top: clamp(36px, 4.5vh, 52px);
       height: clamp(610px, 82vh, 690px);
       max-width: min(44vw, 455px);
       transform: scaleX(-1);
@@ -1348,6 +1348,12 @@
       object-position: bottom center;
       transform-origin: center bottom;
     }
+    .codex-portrait img.portrait-detective {
+      max-width: none;
+      max-height: none;
+      height: 154%;
+      transform: translateY(30%);
+    }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
     .codex-desc { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; word-break: keep-all; }
@@ -1358,6 +1364,12 @@
       .codex-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .codex-detail { grid-template-rows: minmax(340px, 54vh) auto auto; }
       .codex-portrait img { max-width: 94%; max-height: 96%; }
+      .codex-portrait img.portrait-detective {
+        max-width: none;
+        max-height: none;
+        height: 148%;
+        transform: translateY(28%);
+      }
     }
   </style>
 </head>
@@ -1530,10 +1542,10 @@
 
     const characterImages = {
       detective: "assets/hanbada-detective-v5.png",
-      analyst: "assets/yunseo-analyst-v4.png",
-      suspect: "assets/port-manager-v3.png",
+      analyst: "assets/yunseo-analyst-v9.png",
+      suspect: "assets/port-manager-v4.png",
       villain: "assets/doyun-villain-v2.png",
-      judge: "assets/judge-v2.png"
+      judge: "assets/judge-v3.png"
     };
 
     const characterProfiles = [
