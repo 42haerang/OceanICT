@@ -270,7 +270,7 @@
     .character.dim { display: none; }
     .character.active { transform: translateY(-8px) scale(1.05); }
     body.investigation-mode .visual-focus {
-      inset: 56px 30px 158px 30px;
+      inset: 56px clamp(74px, 7vw, 116px) 158px clamp(74px, 7vw, 116px);
       z-index: 8;
     }
     body.investigation-mode .visual-focus.for-right .focus-card,
@@ -279,10 +279,10 @@
     body.investigation-mode .visual-focus.for-left .beach-board { margin-right: 0; }
     body.investigation-mode .visual-focus.for-right .focus-card,
     body.investigation-mode .visual-focus.for-left .focus-card {
-      width: min(620px, 43%) !important;
+      width: min(700px, 50%) !important;
     }
     body.investigation-mode .beach-board {
-      width: min(640px, 44%);
+      width: min(700px, 50%);
       height: min(390px, 78%);
     }
     body.investigation-mode .character-row {
@@ -290,8 +290,8 @@
       height: calc(100% - 72px);
       z-index: 4;
     }
-    body.investigation-mode .character-row.side-left { padding-left: clamp(4px, 2vw, 24px); }
-    body.investigation-mode .character-row.side-right { padding-right: clamp(4px, 2vw, 24px); }
+    body.investigation-mode .character-row.side-left { padding-left: clamp(58px, 7vw, 124px); }
+    body.investigation-mode .character-row.side-right { padding-right: clamp(58px, 7vw, 124px); }
     body.investigation-mode .character {
       width: clamp(270px, 34vw, 430px);
       filter: drop-shadow(0 22px 26px rgba(0,0,0,.52));
@@ -304,10 +304,10 @@
       transform: translateY(168px) scale(1.18);
     }
     body.investigation-mode .character-row.side-left .character.active {
-      transform: translate(-132px, 176px) scale(1.14);
+      transform: translate(-48px, 176px) scale(1.12);
     }
     body.investigation-mode .character-row.side-right .character.active {
-      transform: translate(132px, 176px) scale(1.14);
+      transform: translate(48px, 176px) scale(1.12);
     }
     body.investigation-mode .dialogue {
       z-index: 20;
@@ -987,8 +987,20 @@
       filter: drop-shadow(0 24px 26px rgba(0,0,0,.62));
       opacity: .86;
     }
-    .title-cast img:nth-child(1) { left: clamp(0px, 3.8vw, 48px); transform: scaleX(-1); }
-    .title-cast img:nth-child(2) { right: clamp(18px, 4vw, 56px); opacity: .92; }
+    .title-cast img:nth-child(1) {
+      left: clamp(22px, 5vw, 74px);
+      bottom: -84px;
+      height: clamp(520px, 78vh, 700px);
+      max-width: min(36vw, 360px);
+      transform: scaleX(-1);
+    }
+    .title-cast img:nth-child(2) {
+      right: clamp(30px, 5vw, 78px);
+      bottom: -20px;
+      height: clamp(390px, 62vh, 545px);
+      max-width: min(34vw, 330px);
+      opacity: .92;
+    }
     .title-logo {
       position: relative;
       width: min(640px, 74%);
@@ -1298,7 +1310,7 @@
       display: grid;
       place-items: end center;
     }
-    .codex-portrait img { width: auto; height: auto; max-width: 96%; max-height: 100%; object-fit: contain; object-position: bottom center; }
+    .codex-portrait img { width: auto; height: auto; max-width: 78%; max-height: 96%; object-fit: contain; object-position: bottom center; }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
     .codex-desc { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; word-break: keep-all; }
@@ -1609,11 +1621,11 @@
       const focus = $("#visualFocus");
       row.classList.remove("side-left", "side-right", "active-judge");
       focus?.classList.remove("for-left", "for-right");
-      if (active === "detective") row.classList.add("side-left");
-      if (active === "analyst" || active === "suspect" || active === "villain") row.classList.add("side-right");
+      if (active === "detective" || active === "analyst") row.classList.add("side-left");
+      if (active === "suspect" || active === "villain") row.classList.add("side-right");
       if (active === "judge") row.classList.add("active-judge");
-      if (active === "detective") focus?.classList.add("for-left");
-      if (active === "analyst" || active === "suspect" || active === "villain") focus?.classList.add("for-right");
+      if (active === "detective" || active === "analyst") focus?.classList.add("for-left");
+      if (active === "suspect" || active === "villain") focus?.classList.add("for-right");
       Object.entries(map).forEach(([id, type]) => {
         const el = $("#" + id);
         el.innerHTML = `<img src="${characterImages[type]}" alt="${type}">`;
