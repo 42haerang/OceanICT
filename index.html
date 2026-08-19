@@ -1007,7 +1007,7 @@
     }
     .title-cast img {
       position: absolute;
-      bottom: -12px;
+      top: clamp(12px, 4vh, 38px);
       height: clamp(355px, 58vh, 520px);
       width: auto;
       max-width: min(34vw, 330px);
@@ -1018,14 +1018,12 @@
     }
     .title-cast img:nth-child(1) {
       left: clamp(4px, 3.5vw, 44px);
-      bottom: -112px;
-      height: clamp(560px, 84vh, 720px);
-      max-width: min(44vw, 450px);
+      height: clamp(500px, 76vh, 635px);
+      max-width: min(40vw, 410px);
       transform: scaleX(-1);
     }
     .title-cast img:nth-child(2) {
       right: clamp(30px, 5vw, 78px);
-      bottom: -20px;
       height: clamp(390px, 62vh, 545px);
       max-width: min(34vw, 330px);
       opacity: .92;
