@@ -35,6 +35,11 @@
     }
     button, input { font: inherit; }
     button { cursor: pointer; }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .38;
+      filter: grayscale(.85);
+    }
     .game {
       height: 100vh;
       display: grid;
@@ -597,6 +602,15 @@
     }
     body.court-mode .character-row.side-left .character {
       transform: translate(-26px, 94px) scale(1);
+    }
+    body.court-mode .character-row.side-right {
+      justify-content: flex-start;
+      padding-left: clamp(42px, 9vw, 128px);
+      padding-right: 0;
+    }
+    body.court-mode .character-row.side-right .character {
+      width: clamp(300px, 38vw, 455px);
+      transform: translate(-18px, 96px) scale(1);
     }
     body.court-mode .character-row.active-judge {
       justify-content: center;
@@ -1472,11 +1486,20 @@
 
     const chapters = [
       {
+        kind: "대면",
+        name: "해안 미션 직전",
+        speaker: "탁민재",
+        who: "suspect",
+        line: "“학생 탐정님, 새벽 해변에서 반짝이는 거 몇 개 주웠다고 항만 기록을 뒤질 수는 없습니다. 조사는 좋지만, 괜히 현장 통제선 건드리면 당신 기록부터 문제 될 겁니다.”",
+        mission: ["탁민재의 방해성 진술 확인", "현장 수색을 시작할 명분 확보"],
+        puzzle: "story"
+      },
+      {
         kind: "해변 조사",
         name: "동백섬 새벽 현장",
         speaker: "한바다",
         who: "detective",
-        line: "“모래 위에 남은 건 쓰레기가 아니라 경로야. 빛나는 단서 3개를 찾아서 증거판에 올리자.”",
+        line: "“방해가 빠르다는 건, 누군가는 우리가 찾기 전에 지우고 싶은 게 있다는 뜻이야. 모래 위에 남은 건 쓰레기가 아니라 경로야. 진짜 단서 3개를 찾아서 증거판에 올리자.”",
         mission: ["해변에서 단서 3개 찾기", "증거판에 현장 단서 등록"],
         puzzle: "hotspot"
       },
@@ -1485,7 +1508,7 @@
         name: "기상청 실시간 관측 기록",
         speaker: "윤서",
         who: "analyst",
-        line: "“문장 속에 필요한 조건이 숨어 있어. 바람, 비, 날짜를 잘못 읽으면 완전히 다른 범인이 나와.”",
+        line: "“보고서는 거짓말을 안 해. 다만 필요한 숫자를 너무 조용히 숨겨둘 뿐이야. 바람, 해류, 확산 값을 잘못 읽으면 완전히 다른 범인이 법정에 서게 돼.”",
         mission: ["기상 문서에서 핵심 표현 3개 표시", "표층 이동 보정 근거 확보"],
         puzzle: "document"
       },
@@ -1494,7 +1517,7 @@
         name: "라그랑주 역추적 계산",
         speaker: "윤서",
         who: "analyst",
-        line: "“현재 위치에서 시간을 되감아. 순서를 맞춰야 입자가 엉뚱한 항만으로 튀지 않아.”",
+        line: "“이제 시간을 거꾸로 돌릴 차례야. 보고서에서 확보한 값이 맞으면 입자군은 한 지점으로 모이고, 틀리면 바다는 우리를 속일 거야.”",
         mission: ["역추적 연산 순서 맞추기", "D-45 후보지 수렴 확인"],
         puzzle: "vector"
       },
@@ -1503,16 +1526,25 @@
         name: "폴리머 이동 특성 매칭",
         speaker: "한바다",
         who: "detective",
-        line: "“같은 플라스틱이라도 바다 위에서 성격이 달라. 성질을 맞춰야 알리바이가 무너져.”",
+        line: "“같은 플라스틱이라도 바다 위에서 성격이 달라. 성질을 맞춰야 ‘그냥 떠밀려왔다’는 알리바이가 무너져.”",
         mission: ["PE, PET, PP 특성 매칭", "후보 확률 재계산"],
         puzzle: "match"
+      },
+      {
+        kind: "대면",
+        name: "법정 전 복도",
+        speaker: "류도윤",
+        who: "villain",
+        line: "“실험실에서 숫자 몇 개 맞췄다고 끝난 줄 압니까? 법정은 계산 화면이 아니라 설득의 자리입니다. 확률은 흔들면 무너지고, 당신 증거도 예외는 아닙니다.”",
+        mission: ["류도윤의 압박성 발언 기록", "법정 제출 논리 정리"],
+        puzzle: "story"
       },
       {
         kind: "심리",
         name: "부산 연안 환경 법정",
         speaker: "탁민재",
         who: "suspect",
-        line: "“항만에서 나온 거라는 증거 있습니까? 바다는 원래 복잡하게 흐릅니다.”",
+        line: "“재판장님, 항만에서 나온 거라는 직접 증거는 없습니다. 바다는 원래 복잡하게 흐르고, 복잡한 건 언제든 오해를 만들죠.”",
         mission: ["올바른 증거 제시", "오염원 후보 판정"],
         puzzle: "trial"
       }
@@ -1716,7 +1748,8 @@
       $("#sceneKind").textContent = inCourt ? "모의 법정" : ch.kind;
       $("#sceneName").textContent = inCourt ? "부산환경법정 제1심리실" : ch.name;
       $("#speaker").textContent = inCourt ? court.speaker : ch.speaker;
-      $("#dialogue").textContent = inCourt ? court.line : ch.line;
+      const line = inCourt ? court.line : ch.line;
+      $("#dialogue").textContent = typeof line === "function" ? line() : line;
       $("#missionTag").textContent = ch.kind;
       setCharacters(inCourt ? court.who : ch.who);
       renderMissions(ch);
@@ -2076,6 +2109,7 @@
     Object.assign(state, {
       screen: "title",
       reportTargets: ["windValue", "currentValue", "diffusionValue"],
+      reportValues: null,
       simWind: 0,
       simCurrent: 0,
       simDiffusion: 0,
@@ -2099,36 +2133,47 @@
     });
 
     const reportValueMeta = {
-      windValue: { label: "풍향", real: 35, min: 22, max: 48 },
-      currentValue: { label: "해류", real: 50, min: 36, max: 64 },
-      diffusionValue: { label: "확산 오차", real: 18, min: 9, max: 28 },
+      windValue: { label: "풍향", fallback: 35, min: 28, max: 44 },
+      currentValue: { label: "해류", fallback: 50, min: 42, max: 61 },
+      diffusionValue: { label: "확산 오차", fallback: 18, min: 12, max: 24 },
     };
 
-    function reportValueText(id, locked = state.doc.has(id)) {
+    function makeReportValues() {
+      return Object.fromEntries(Object.entries(reportValueMeta).map(([id, meta]) => [
+        id,
+        meta.min + Math.floor(Math.random() * (meta.max - meta.min + 1))
+      ]));
+    }
+
+    function ensureReportValues() {
+      if (!state.reportValues) state.reportValues = makeReportValues();
+      return state.reportValues;
+    }
+
+    function reportValue(id) {
+      const values = ensureReportValues();
+      return values[id] ?? reportValueMeta[id].fallback;
+    }
+
+    function reportValueText(id) {
       const meta = reportValueMeta[id];
-      const value = locked ? meta.real : meta.min + Math.floor(Math.random() * (meta.max - meta.min + 1));
-      return `${meta.label} ${value}%`;
+      return `${meta.label} ${reportValue(id)}%`;
     }
 
-    function stopReportNoise() {
-      clearInterval(window.reportNoiseTimer);
-      window.reportNoiseTimer = null;
+    function reportConditionText() {
+      return `풍향 ${reportValue("windValue")}%, 해류 ${reportValue("currentValue")}%, 확산 ${reportValue("diffusionValue")}%`;
     }
 
-    function startReportNoise() {
-      stopReportNoise();
-      window.reportNoiseTimer = setInterval(() => {
-        if (chapters[state.chapter]?.puzzle !== "document") {
-          stopReportNoise();
-          return;
-        }
-        Object.keys(reportValueMeta).forEach(id => {
-          if (state.doc.has(id)) return;
-          document.querySelectorAll(`[data-report-value="${id}"]`).forEach(el => {
-            el.textContent = reportValueText(id, false);
-          });
-        });
-      }, 260);
+    function simulationIsCorrect() {
+      return state.simWind === reportValue("windValue") &&
+        state.simCurrent === reportValue("currentValue") &&
+        state.simDiffusion === reportValue("diffusionValue");
+    }
+
+    function simulationError() {
+      return Math.abs(state.simWind - reportValue("windValue")) +
+        Math.abs(state.simCurrent - reportValue("currentValue")) +
+        Math.abs(state.simDiffusion - reportValue("diffusionValue"));
     }
 
     const sceneBackgrounds = {
@@ -2273,11 +2318,11 @@
       ["testimony", "은폐 진술 녹취", "류도윤이 폭우 직후 부표 폐기 기록을 숨긴 정황."]
     );
 
-    chapters[0].mission = ["쓰레기 속 진짜 단서 3개 찾기", "헛단서와 오염 단서를 구분하기"];
-    chapters[1].mission = ["보고서에서 풍향·해류·확산 오차 값 찾기", "찾은 값을 역추적 시뮬레이션 조건으로 확보"];
-    chapters[2].mission = ["보고서 증거값으로 슬라이더 조정", "시작 버튼으로 D-45까지 자동 역추적"];
-    chapters[3].mission = ["중앙 분석대에서 폴리머 3종 매칭", "법정 제출용 분석표 완성"];
-    chapters[4].mission = ["류도윤의 반박을 증거로 무너뜨리기", "재판 엔딩까지 공방 진행"];
+    chapters.find(ch => ch.puzzle === "hotspot").mission = ["쓰레기 속 진짜 단서 3개 찾기", "헛단서와 오염 단서를 구분하기"];
+    chapters.find(ch => ch.puzzle === "document").mission = ["보고서에서 풍향·해류·확산 오차 값 찾기", "찾은 값을 역추적 시뮬레이션 조건으로 확보"];
+    chapters.find(ch => ch.puzzle === "vector").mission = ["보고서 증거값으로 슬라이더 조정", "시작 버튼으로 D-45까지 자동 역추적"];
+    chapters.find(ch => ch.puzzle === "match").mission = ["중앙 분석대에서 폴리머 3종 매칭", "법정 제출용 분석표 완성"];
+    chapters.find(ch => ch.puzzle === "trial").mission = ["류도윤의 반박을 증거로 무너뜨리기", "재판 엔딩까지 공방 진행"];
 
     trialScenes.splice(0, trialScenes.length,
       {
@@ -2319,7 +2364,7 @@
       {
         speaker: "한바다",
         who: "detective",
-        line: "풍향 35%, 해류 50%, 확산 18%. 이 조건으로 시간을 D-45까지 되감으면 입자군이 기장 양식장 앞에서 가장 높은 밀도로 모입니다. 하지만 법정 제출은 한 번으로 끝나지 않습니다. 이동 원인, 배제 논리, 결정타를 순서대로 제출해야 합니다.",
+        line: () => `${reportConditionText()}. 이 조건으로 시간을 D-45까지 되감으면 입자군이 기장 양식장 앞에서 가장 높은 밀도로 모입니다. 하지만 법정 제출은 한 번으로 끝나지 않습니다. 이동 원인, 배제 논리, 결정타를 순서대로 제출해야 합니다.`,
         proof: true
       },
       {
@@ -2354,6 +2399,7 @@
         type === "document" && state.doc.has("windValue") && state.doc.has("currentValue") && state.doc.has("diffusionValue") ||
         type === "vector" && state.found.has("current") ||
         type === "match" && state.found.has("polymer") ||
+        type === "story" ||
         type === "trial" && (state.trialDone || state.ending)
       );
     }
@@ -2376,8 +2422,9 @@
       const doneMap = {
         hotspot: [state.found.has("pe") && state.found.has("fiber") && state.found.has("foam"), state.found.size >= 3],
         document: [state.doc.has("windValue") && state.doc.has("currentValue") && state.doc.has("diffusionValue"), state.found.has("wind") && state.doc.has("currentValue") && state.doc.has("diffusionValue")],
-        vector: [state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18, state.found.has("current")],
+        vector: [simulationIsCorrect(), state.found.has("current")],
         match: [Object.keys(state.matches).length >= 3, state.found.has("polymer")],
+        story: [true, true],
         trial: [state.found.has("testimony"), state.ending]
       }[ch.puzzle] || [];
       $("#missionList").innerHTML = ch.mission.map((m, i) => `<li class="${doneMap[i] ? "done" : ""}">${m}</li>`).join("");
@@ -2385,7 +2432,6 @@
 
     renderVisualFocus = function(type) {
       const focus = $("#visualFocus");
-      stopReportNoise();
       if (type === "hotspot") {
         const items = [
           ["pe", "▰", "노란 PE 조각", 24, 42, true, -18, 22, -10, "-.2s", "1.65s"],
@@ -2468,9 +2514,8 @@
             </div>
           </div>`;
         focus.querySelectorAll(".doc-clue").forEach(el => el.onclick = () => collectDoc(el.dataset.doc));
-        startReportNoise();
       } else if (type === "vector") {
-        const simCorrect = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
+        const simCorrect = simulationIsCorrect();
         focus.innerHTML = `
           <div class="focus-card dark" style="width:min(780px,80%)">
             <h3>라그랑주 역추적 시뮬레이션</h3>
@@ -2536,6 +2581,19 @@
             <p>명령: 폐부표 회수, 폭우 직후 해상 감시, 양식장 부표 관리대장 전수 조사.</p>
           </div>`;
       } else {
+        const ch = chapters[state.chapter];
+        if (type === "story") {
+          focus.innerHTML = `
+            <div class="focus-card dark court-evidence" style="width:min(680px,72%)">
+              <h3>${ch.name}</h3>
+              <p class="brief">${ch.line}</p>
+              <ul>
+                <li>${ch.mission[0]}</li>
+                <li>${ch.mission[1]}</li>
+              </ul>
+            </div>`;
+          return;
+        }
         const proof = proofQuestions[Math.min(state.proofStep, proofQuestions.length - 1)];
         focus.innerHTML = `
           <div class="focus-card dark court-evidence">
@@ -2563,9 +2621,11 @@
       } else if (type === "document") {
         box.innerHTML = `<h3>보고서 수치 수색</h3><p class="brief">오른쪽 목표값 3개를 보고, 중앙 보고서 본문에서 같은 수치를 직접 찾아 누르세요. 이 값을 찾아야 역추적 화면으로 넘어갑니다.</p>`;
       } else if (type === "vector") {
-        box.innerHTML = `<h3>자동 역추적</h3><p class="brief">보고서 증거값: 풍향 35%, 해류 50%, 확산 18%. 다른 값을 넣어도 실행되지만 입자군이 발산해 잘못된 후보지가 나옵니다.</p>`;
+        box.innerHTML = `<h3>자동 역추적</h3><p class="brief">보고서 증거값: ${reportConditionText()}. 다른 값을 넣어도 실행되지만 입자군이 발산해 잘못된 후보지가 나옵니다.</p>`;
       } else if (type === "match") {
         box.innerHTML = `<h3>폴리머 매칭</h3><p class="brief">중앙 분석대에서 물질과 이동 특성을 직접 연결하세요.</p>`;
+      } else if (type === "story") {
+        box.innerHTML = `<h3>스토리 대면</h3><p class="brief">인물의 태도와 발언을 확인한 뒤 다음 장면으로 이동하세요.</p>`;
       } else {
         box.innerHTML = `<h3>법정 공방</h3><p class="brief">대화 배너의 선택지로 반박을 이어가고, 증거 조합을 정확히 제출하세요.</p>`;
       }
@@ -2610,7 +2670,7 @@
       clearTimeout(window.simTimer);
       state.simRunning = true;
       state.simArrived = false;
-      state.simWrong = !(state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18);
+      state.simWrong = !simulationIsCorrect();
       state.simDay = 0;
       toast(state.simWrong ? "조건이 어긋난 채 역추적을 시작합니다. 입자군이 발산할 수 있습니다." : "보고서 조건으로 역추적을 시작합니다.");
       const tick = () => {
@@ -2645,8 +2705,8 @@
       const farm = { x: 170, y: 188 };
       const harbor = { x: 300, y: 228 };
       const ocean = { x: 585, y: 58 };
-      const correct = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
-      const error = Math.abs(state.simWind - 35) + Math.abs(state.simCurrent - 50) + Math.abs(state.simDiffusion - 18);
+      const correct = simulationIsCorrect();
+      const error = simulationError();
       const target = correct
         ? { x: farm.x, y: farm.y, label: "기장 양식장", color: "#ffd45d" }
         : error > 35
@@ -2697,7 +2757,7 @@
         : `<path d="M510 214 C520 155 565 100 ${target.x} ${target.y}" fill="none" stroke="#70d6ff" stroke-width="2" opacity=".35" stroke-dasharray="2 10"/>`;
       g.innerHTML = guide + particles + `<circle cx="${focusX.toFixed(1)}" cy="${focusY.toFixed(1)}" r="${halo.toFixed(1)}" fill="${correct ? "rgba(255,73,106,.12)" : "rgba(112,214,255,.12)"}" stroke="${correct ? "rgba(255,212,93,.78)" : "rgba(112,214,255,.75)"}" stroke-dasharray="6 6"/>`;
       const prob = correct
-        ? Math.min(92, Math.round(28 + t * 48 + (state.simWind === 35 ? 6 : -8) + (state.simCurrent === 50 ? 7 : -8) + (state.simDiffusion === 18 ? 5 : -6)))
+        ? Math.min(92, Math.round(46 + t * 46))
         : Math.max(11, Math.round(68 - error * .9 - t * 18));
       const readout = $("#simReadout");
       if (readout) {
@@ -2793,6 +2853,7 @@
       state.penaltyMs = 0;
       state.finishedSaved = false;
       state.runId = (crypto?.randomUUID?.() || `run-${state.startedAt}-${Math.random().toString(16).slice(2)}`);
+      state.reportValues = makeReportValues();
       try {
         await saveTimeRecord({
           id: state.runId,
@@ -2860,6 +2921,7 @@
           <button class="primary" id="restartBtn">처음부터 다시 수사</button>`;
         $("#prevSceneBtn").onclick = goPreviousScene;
         $("#restartBtn").onclick = () => location.reload();
+        $("#advanceBtn").disabled = false;
         $("#advanceBtn").onclick = () => location.reload();
         $("#advanceBtn").textContent = "재시작";
         return;
@@ -2895,6 +2957,7 @@
             };
           });
         }
+        $("#advanceBtn").disabled = true;
         $("#advanceBtn").onclick = () => toast("법정에서는 아래 대화 선택지로 진행하세요.");
         $("#advanceBtn").textContent = "법정 심리 중";
         return;
@@ -2902,7 +2965,7 @@
       const canAdvance = evidenceIsComplete(type);
       if (type === "vector" && !state.found.has("current")) {
         const simCanRun = !state.simRunning;
-        const simCorrect = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
+        const simCorrect = simulationIsCorrect();
         $("#choices").innerHTML = `
           <button class="choice" id="prevSceneBtn">이전 장면</button>
           <button class="choice" id="hintBtn">힌트</button>
@@ -2910,6 +2973,7 @@
         $("#prevSceneBtn").onclick = goPreviousScene;
         $("#hintBtn").onclick = hint;
         $("#simStartAlt").onclick = startBacktrack;
+        $("#advanceBtn").disabled = !simCanRun;
         $("#advanceBtn").onclick = simCanRun ? startBacktrack : hint;
         $("#advanceBtn").textContent = simCorrect ? "역추적 시작" : "오차 포함 실행";
         return;
@@ -2921,6 +2985,7 @@
       $("#prevSceneBtn").onclick = goPreviousScene;
       $("#hintBtn").onclick = hint;
       $("#nextBtn").onclick = nextChapter;
+      $("#advanceBtn").disabled = !canAdvance;
       $("#advanceBtn").onclick = canAdvance ? nextChapter : hint;
       $("#advanceBtn").textContent = canAdvance ? (state.chapter >= chapters.length - 1 ? "엔딩 보기" : "다음 장면") : "수사 진행";
     };
@@ -2944,7 +3009,7 @@
       const hints = {
         hotspot: "반짝이는 모든 물체가 증거는 아닙니다. PE 조각, 로프 섬유, 부표 파편을 찾아보세요.",
         document: "보고서 오른쪽 목표 단어와 같은 표현을 본문에서 찾으세요.",
-        vector: "보고서 조건값은 풍향 35%, 해류 50%, 확산 18%입니다.",
+        vector: `보고서 조건값은 ${reportConditionText()}입니다.`,
         match: "PE는 바람, PET는 해류, PP는 부표 파편의 부력과 연결됩니다.",
         trial: "단일 증거가 아니라 네 가지 조합 증거를 제출해야 합니다."
       };
@@ -3027,6 +3092,7 @@
       }
       const next = $("#storyNextBtn");
       if (next) next.onclick = () => { state.screen = "game"; render(); };
+      $("#advanceBtn").disabled = false;
       $("#advanceBtn").onclick = () => {
         if (kind === "title") startRunFromTitle();
         else {
