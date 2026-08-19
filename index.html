@@ -267,10 +267,6 @@
       object-fit: contain;
       object-position: bottom center;
     }
-    .character.character-detective img {
-      transform: scaleX(1.06);
-      transform-origin: center bottom;
-    }
     .character.character-analyst {
       width: clamp(170px, 20vw, 238px);
     }
@@ -1022,9 +1018,9 @@
     }
     .title-cast img:nth-child(1) {
       left: clamp(22px, 5vw, 74px);
-      bottom: -46px;
-      height: clamp(430px, 65vh, 585px);
-      max-width: min(38vw, 390px);
+      bottom: -20px;
+      height: clamp(390px, 62vh, 545px);
+      max-width: min(34vw, 330px);
       transform: scaleX(-1);
     }
     .title-cast img:nth-child(2) {
@@ -1326,7 +1322,6 @@
       overflow: hidden;
     }
     .codex-thumb img { width: auto; height: 42px; max-width: 42px; object-fit: contain; object-position: bottom center; }
-    .codex-thumb img.portrait-detective { height: 38px; transform: scaleX(1.06); }
     .codex-thumb img.portrait-analyst { height: 44px; }
     .codex-detail {
       min-height: 0;
@@ -1346,15 +1341,11 @@
       place-items: end center;
     }
     .codex-portrait img { width: auto; height: auto; max-width: 78%; max-height: 96%; object-fit: contain; object-position: bottom center; }
-    .codex-portrait img.portrait-detective {
-      max-height: 89%;
-      max-width: 88%;
-      transform: scaleX(1.06);
-    }
     .codex-portrait img.portrait-analyst {
       max-height: 94%;
       max-width: 86%;
     }
+    .codex-portrait img.portrait-detective,
     .codex-portrait img.portrait-villain,
     .codex-portrait img.portrait-suspect,
     .codex-portrait img.portrait-judge {
@@ -1542,7 +1533,7 @@
     };
 
     const characterImages = {
-      detective: "assets/hanbada-detective-v4.png",
+      detective: "assets/hanbada-detective-v5.png",
       analyst: "assets/yunseo-analyst-v7.png",
       suspect: "assets/port-manager-v3.png",
       villain: "assets/doyun-villain-v2.png",
