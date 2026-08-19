@@ -1441,7 +1441,7 @@
       {
         kind: "문서 감식",
         name: "기상청 실시간 관측 기록",
-        speaker: "수민",
+        speaker: "윤서",
         who: "analyst",
         line: "“문장 속에 필요한 조건이 숨어 있어. 바람, 비, 날짜를 잘못 읽으면 완전히 다른 범인이 나와.”",
         mission: ["기상 문서에서 핵심 표현 3개 표시", "표층 이동 보정 근거 확보"],
@@ -1450,7 +1450,7 @@
       {
         kind: "해류 퍼즐",
         name: "라그랑주 역추적 계산",
-        speaker: "수민",
+        speaker: "윤서",
         who: "analyst",
         line: "“현재 위치에서 시간을 되감아. 순서를 맞춰야 입자가 엉뚱한 항만으로 튀지 않아.”",
         mission: ["역추적 연산 순서 맞추기", "D-45 후보지 수렴 확인"],
@@ -1493,7 +1493,7 @@
 
     const characterImages = {
       detective: "assets/hanbada-detective-v3.png",
-      analyst: "assets/sumin-analyst-v5.png",
+      analyst: "assets/yunseo-analyst-v6.png",
       suspect: "assets/port-manager-v3.png",
       villain: "assets/doyun-villain-v2.png",
       judge: "assets/judge-v2.png"
@@ -1508,7 +1508,7 @@
       },
       {
         id: "analyst",
-        name: "수민",
+        name: "윤서",
         role: "해류 데이터 분석관",
         desc: "풍향, 해류, 확산 오차를 정리해 수사 방향을 잡아주는 분석 담당. 보고서 속 숫자가 왜 중요한지 법정에서 과학적으로 증명한다."
       },
@@ -1552,7 +1552,7 @@
         proof: true
       },
       {
-        speaker: "수민",
+        speaker: "윤서",
         who: "analyst",
         line: "북서풍은 표층 PE 조각을 밀었고, 폭우 유출은 하천 부유물 농도를 급증시켰습니다. 역류 벡터를 거꾸로 적용하면 입자는 낙동강 하구로 수렴합니다.",
         choices: [{ text: "최종 판결을 요청한다.", next: 4 }]
@@ -1634,7 +1634,7 @@
       });
       const miniType = active === "judge" ? "judge" : active === "villain" ? "villain" : active === "suspect" ? "suspect" : active === "analyst" ? "analyst" : "detective";
       $("#miniAvatar").innerHTML = `<img src="${characterImages[miniType]}" alt="">`;
-      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "analyst" ? "수민" : active === "suspect" ? "탁민재" : "한바다";
+      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "analyst" ? "윤서" : active === "suspect" ? "탁민재" : "한바다";
       $("#activeRole").textContent = active === "judge" ? "부산환경법정 재판장" : active === "villain" ? "해운물류그룹 배후 총책" : active === "analyst" ? "해류 데이터 분석관" : active === "suspect" ? "부산항 야간 작업 책임자" : "해양환경수사국 학생 탐정";
     }
 
@@ -2227,7 +2227,7 @@
         choices: [{ text: "이의 있음! 조건을 하나씩 검증한다.", objection: true, next: 4 }]
       },
       {
-        speaker: "수민",
+        speaker: "윤서",
         who: "analyst",
         line: "항만 섬유는 혼동 단서입니다. 염분 마모와 부력 패턴은 항만 로프보다 폐부표 외피에 가깝습니다. D-24 보고서의 북서풍, 폭우 유출, 양식장 부표 파편을 함께 봐야 합니다.",
         choices: [{ text: "역추적 시뮬레이션 결과를 부른다.", next: 5 }]
@@ -2245,7 +2245,7 @@
         proof: true
       },
       {
-        speaker: "수민",
+        speaker: "윤서",
         who: "analyst",
         line: "폴리머 매칭도 일치합니다. PE는 표층 바람에 민감했고, PP 부표 파편은 양식장 부표 외피와 부력·마모 패턴이 같습니다.",
         choices: [{ text: "은폐 정황을 추궁한다.", next: 8 }]
