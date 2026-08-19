@@ -556,14 +556,21 @@
     body.court-mode .character {
       width: clamp(220px, 30vw, 330px);
     }
+    body.court-mode .character-row.side-left {
+      justify-content: flex-start;
+      padding-left: clamp(0px, 2vw, 28px);
+    }
+    body.court-mode .character-row.side-left .character {
+      transform: translate(-34px, -2px) scale(.96);
+    }
     body.court-mode .character-row.active-judge {
-      justify-content: center;
-      padding-left: clamp(70px, 16vw, 220px);
+      justify-content: flex-start;
+      padding-left: clamp(8px, 4vw, 54px);
       bottom: 120px;
     }
     body.court-mode .character-row.active-judge .character {
       width: clamp(140px, 18vw, 210px);
-      transform: translate(0, 18px) scale(.78);
+      transform: translate(-30px, 18px) scale(.78);
       opacity: .96;
     }
     body.court-mode .character img {
