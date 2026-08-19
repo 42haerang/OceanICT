@@ -2090,7 +2090,7 @@
           </div>`;
         focus.querySelectorAll(".doc-clue").forEach(el => el.onclick = () => collectDoc(el.dataset.doc));
       } else if (type === "vector") {
-        const canStart = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
+        const simCorrect = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
         focus.innerHTML = `
           <div class="focus-card dark" style="width:min(780px,80%)">
             <h3>라그랑주 역추적 시뮬레이션</h3>
@@ -2114,8 +2114,8 @@
               <div class="sim-control"><label>시간 되감기 <b>D-${state.simDay}</b></label><input id="simDay" type="range" min="0" max="45" value="${state.simDay}" disabled></div>
             </div>
             <div class="sim-status">
-              <span id="simReadout">${canStart ? "보고서 조건과 일치합니다. 시작 버튼을 누르세요." : "보고서에서 찾은 북서풍/해류/확산 조건으로 조절하세요."}</span>
-              <button class="primary" id="simStart" ${canStart && !state.simRunning ? "" : "disabled"}>${state.simArrived ? "도착 완료" : "시작"}</button>
+              <span id="simReadout">${state.simRunning ? "입자군을 D-45까지 역추적 중입니다." : simCorrect ? "보고서 조건과 일치합니다. 시작 버튼을 누르세요." : "조건이 달라도 실행됩니다. 대신 잘못된 궤적과 후보지가 나올 수 있습니다."}</span>
+              <button class="primary" id="simStart" ${!state.simRunning ? "" : "disabled"}>${state.simRunning ? "역추적 중" : state.simArrived ? "도착 완료" : "시작"}</button>
             </div>
           </div>`;
         bindSimulationFocus();
@@ -2183,7 +2183,7 @@
       } else if (type === "document") {
         box.innerHTML = `<h3>보고서 수치 수색</h3><p class="brief">오른쪽 목표값 3개를 보고, 중앙 보고서 본문에서 같은 수치를 직접 찾아 누르세요. 이 값을 찾아야 역추적 화면으로 넘어갑니다.</p>`;
       } else if (type === "vector") {
-        box.innerHTML = `<h3>자동 역추적</h3><p class="brief">보고서 증거값: 풍향 35%, 해류 50%, 확산 18%. 값을 맞춘 뒤 시작을 누르면 시간이 자동으로 D-45까지 되감깁니다.</p>`;
+        box.innerHTML = `<h3>자동 역추적</h3><p class="brief">보고서 증거값: 풍향 35%, 해류 50%, 확산 18%. 다른 값을 넣어도 실행되지만 입자군이 발산해 잘못된 후보지가 나옵니다.</p>`;
       } else if (type === "match") {
         box.innerHTML = `<h3>폴리머 매칭</h3><p class="brief">중앙 분석대에서 물질과 이동 특성을 직접 연결하세요.</p>`;
       } else {
@@ -2227,14 +2227,12 @@
 
     function startBacktrack() {
       if (state.simRunning) return;
-      if (!(state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18)) {
-        toast("보고서 증거값과 맞지 않습니다.");
-        return;
-      }
       clearTimeout(window.simTimer);
       state.simRunning = true;
       state.simArrived = false;
+      state.simWrong = !(state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18);
       state.simDay = 0;
+      toast(state.simWrong ? "조건이 어긋난 채 역추적을 시작합니다. 입자군이 발산할 수 있습니다." : "보고서 조건으로 역추적을 시작합니다.");
       const tick = () => {
         state.simDay = Math.min(45, state.simDay + 1);
         const input = $("#simDay");
@@ -2247,8 +2245,13 @@
           window.simTimer = setTimeout(tick, 35);
         } else {
           state.simRunning = false;
-          state.simArrived = true;
-          addVector("complete");
+          if (state.simWrong) {
+            state.simArrived = false;
+            addVector("wrong");
+          } else {
+            state.simArrived = true;
+            addVector("complete");
+          }
         }
       };
       tick();
@@ -2261,6 +2264,14 @@
       const start = { x: 510, y: 214 };
       const farm = { x: 170, y: 188 };
       const harbor = { x: 300, y: 228 };
+      const ocean = { x: 585, y: 58 };
+      const correct = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
+      const error = Math.abs(state.simWind - 35) + Math.abs(state.simCurrent - 50) + Math.abs(state.simDiffusion - 18);
+      const target = correct
+        ? { x: farm.x, y: farm.y, label: "기장 양식장", color: "#ffd45d" }
+        : error > 35
+          ? { x: ocean.x, y: ocean.y, label: "외해 발산", color: "#70d6ff" }
+          : { x: harbor.x, y: harbor.y, label: "부산항 오판", color: "#ff8b5c" };
       const cubic = (p0, p1, p2, p3, u) => {
         const a = (1 - u) ** 3;
         const b = 3 * (1 - u) ** 2 * u;
@@ -2273,32 +2284,47 @@
       };
       const particles = Array.from({ length: 34 }, (_, i) => {
         const lane = (i % 7) - 3;
-        const drift = Math.sin(i * 12.989) * 18;
-        const endBias = i % 9 === 0 ? harbor : farm;
+        const drift = Math.sin(i * 12.989) * (correct ? 18 : 36 + error * .7);
+        const fan = correct ? lane * 7 : lane * (12 + error * .25);
+        const endBias = correct ? (i % 9 === 0 ? harbor : farm) : target;
         const end = {
-          x: endBias.x + lane * 7 + drift * .25,
-          y: endBias.y + Math.cos(i * 4.7) * 12
+          x: endBias.x + fan + drift * .35,
+          y: endBias.y + Math.cos(i * 4.7) * (correct ? 12 : 22 + error * .22)
         };
-        const c1 = { x: 440 + lane * 10, y: 196 + Math.sin(i) * 22 };
-        const c2 = { x: 280 + lane * 15, y: 154 + Math.cos(i * .8) * 30 };
+        const c1 = {
+          x: 440 + lane * (correct ? 10 : 18),
+          y: 196 + Math.sin(i) * (correct ? 22 : 46) - (correct ? 0 : error * .45)
+        };
+        const c2 = {
+          x: (correct ? 280 : 360) + lane * (correct ? 15 : 26),
+          y: (correct ? 154 : 96) + Math.cos(i * .8) * (correct ? 30 : 54) - (correct ? 0 : error * .65)
+        };
         const p = cubic(start, c1, c2, end, t);
         const prev = cubic(start, c1, c2, end, Math.max(0, t - .08));
         const trail = `M${start.x} ${start.y} C${c1.x} ${c1.y} ${c2.x} ${c2.y} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
-        const color = endBias === farm ? "#ffd45d" : "#ff8a5d";
-        const opacity = endBias === farm ? .88 : .42;
+        const color = correct ? (endBias === farm ? "#ffd45d" : "#ff8a5d") : target.color;
+        const opacity = correct ? (endBias === farm ? .88 : .42) : .42 + Math.min(.3, error / 120);
         return `
-          <path d="${trail}" fill="none" stroke="${color}" stroke-width="${endBias === farm ? 1.7 : 1}" opacity="${opacity * .42}" stroke-dasharray="4 7"/>
+          <path d="${trail}" fill="none" stroke="${color}" stroke-width="${correct && endBias === farm ? 1.7 : 1}" opacity="${opacity * .42}" stroke-dasharray="${correct ? "4 7" : "2 10"}"/>
           <line x1="${prev.x.toFixed(1)}" y1="${prev.y.toFixed(1)}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="${color}" stroke-width="2.2" opacity="${opacity}"/>
-          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${endBias === farm ? 3.2 : 2.4}" fill="${color}" opacity="${opacity}"/>`;
+          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${correct && endBias === farm ? 3.2 : 2.4}" fill="${color}" opacity="${opacity}"/>`;
       }).join("");
-      const focusX = 170 + Math.sin(t * Math.PI * 2) * 4;
-      const focusY = 188 + Math.cos(t * Math.PI * 2) * 3;
-      const halo = Math.max(16, 62 - t * 34 + state.simDiffusion * .45);
-      const guide = `<path d="M510 214 C438 196 292 148 170 188" fill="none" stroke="#80fff1" stroke-width="2" opacity=".42" stroke-dasharray="9 9"/>`;
-      g.innerHTML = guide + particles + `<circle cx="${focusX.toFixed(1)}" cy="${focusY.toFixed(1)}" r="${halo.toFixed(1)}" fill="rgba(255,73,106,.12)" stroke="rgba(255,212,93,.78)" stroke-dasharray="6 6"/>`;
-      const prob = Math.min(92, Math.round(28 + t * 48 + (state.simWind === 35 ? 6 : -8) + (state.simCurrent === 50 ? 7 : -8) + (state.simDiffusion === 18 ? 5 : -6)));
+      const focusX = target.x + Math.sin(t * Math.PI * 2) * (correct ? 4 : 16);
+      const focusY = target.y + Math.cos(t * Math.PI * 2) * (correct ? 3 : 14);
+      const halo = Math.max(correct ? 16 : 34, 62 - t * (correct ? 34 : 8) + state.simDiffusion * (correct ? .45 : .8));
+      const guide = correct
+        ? `<path d="M510 214 C438 196 292 148 170 188" fill="none" stroke="#80fff1" stroke-width="2" opacity=".42" stroke-dasharray="9 9"/>`
+        : `<path d="M510 214 C520 155 565 100 ${target.x} ${target.y}" fill="none" stroke="#70d6ff" stroke-width="2" opacity=".35" stroke-dasharray="2 10"/>`;
+      g.innerHTML = guide + particles + `<circle cx="${focusX.toFixed(1)}" cy="${focusY.toFixed(1)}" r="${halo.toFixed(1)}" fill="${correct ? "rgba(255,73,106,.12)" : "rgba(112,214,255,.12)"}" stroke="${correct ? "rgba(255,212,93,.78)" : "rgba(112,214,255,.75)"}" stroke-dasharray="6 6"/>`;
+      const prob = correct
+        ? Math.min(92, Math.round(28 + t * 48 + (state.simWind === 35 ? 6 : -8) + (state.simCurrent === 50 ? 7 : -8) + (state.simDiffusion === 18 ? 5 : -6)))
+        : Math.max(11, Math.round(68 - error * .9 - t * 18));
       const readout = $("#simReadout");
-      if (readout) readout.innerHTML = `입자군이 현재 해변에서 과거 후보지로 역류 중입니다. 기장 양식장 후보 확률 <strong>${prob}%</strong>, 현재 D-${state.simDay}.`;
+      if (readout) {
+        readout.innerHTML = correct
+          ? `입자군이 현재 해변에서 과거 후보지로 역류 중입니다. 기장 양식장 후보 확률 <strong>${prob}%</strong>, 현재 D-${state.simDay}.`
+          : `${target.label} 후보 확률 <strong>${prob}%</strong>. 조건 오차 때문에 입자군이 바다에서 발산 중입니다. D-${state.simDay}.`;
+      }
     };
 
     collect = function(id, message) {
@@ -2321,7 +2347,13 @@
       if (id === "complete") {
         state.found.add("current");
         state.trust = Math.min(100, state.trust + 12);
+        state.simWrong = false;
         toast("입자군이 기장 양식장 후보 지점에 도착했습니다.");
+        render();
+      } else if (id === "wrong") {
+        state.found.delete("current");
+        state.trust = Math.max(0, state.trust - 5);
+        toast("잘못된 조건으로 입자군이 발산했습니다. 보고서 수치를 다시 맞춰 재실행하세요.");
         render();
       }
     };
@@ -2487,16 +2519,17 @@
       }
       const canAdvance = evidenceIsComplete(type);
       if (type === "vector" && !state.found.has("current")) {
-        const canStart = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18 && !state.simRunning;
+        const simCanRun = !state.simRunning;
+        const simCorrect = state.simWind === 35 && state.simCurrent === 50 && state.simDiffusion === 18;
         $("#choices").innerHTML = `
           <button class="choice" id="prevSceneBtn">이전 장면</button>
           <button class="choice" id="hintBtn">힌트</button>
-          <button class="primary" id="simStartAlt" ${canStart ? "" : "disabled"}>${state.simRunning ? "역추적 중" : "역추적 시작"}</button>`;
+          <button class="primary" id="simStartAlt" ${simCanRun ? "" : "disabled"}>${state.simRunning ? "역추적 중" : simCorrect ? "역추적 시작" : "오차 포함 실행"}</button>`;
         $("#prevSceneBtn").onclick = goPreviousScene;
         $("#hintBtn").onclick = hint;
         $("#simStartAlt").onclick = startBacktrack;
-        $("#advanceBtn").onclick = canStart ? startBacktrack : hint;
-        $("#advanceBtn").textContent = canStart ? "역추적 시작" : "조건 확인";
+        $("#advanceBtn").onclick = simCanRun ? startBacktrack : hint;
+        $("#advanceBtn").textContent = simCorrect ? "역추적 시작" : "오차 포함 실행";
         return;
       }
       $("#choices").innerHTML = `
