@@ -579,14 +579,23 @@
       transform: translate(-34px, -2px) scale(.96);
     }
     body.court-mode .character-row.active-judge {
+      justify-content: center;
+      padding-left: 0;
+      bottom: 104px;
+    }
+    body.court-mode .character-row.active-judge .character {
+      width: clamp(220px, 30vw, 330px);
+      transform: translate(0, -2px) scale(1);
+      opacity: .96;
+    }
+    body.court-mode.court-final-judge .character-row.active-judge {
       justify-content: flex-start;
       padding-left: clamp(8px, 4vw, 54px);
       bottom: 120px;
     }
-    body.court-mode .character-row.active-judge .character {
+    body.court-mode.court-final-judge .character-row.active-judge .character {
       width: clamp(140px, 18vw, 210px);
       transform: translate(-30px, 18px) scale(.78);
-      opacity: .96;
     }
     body.court-mode .character img {
       max-height: min(520px, calc(100vh - 360px));
@@ -1664,9 +1673,10 @@
     function render() {
       const ch = chapters[state.chapter];
       const inCourt = ch.puzzle === "trial";
-      document.body.classList.toggle("court-mode", inCourt);
-      document.body.classList.toggle("investigation-mode", ["hotspot", "document", "vector", "match"].includes(ch.puzzle));
       const court = trialScenes[state.trialPhase];
+      document.body.classList.toggle("court-mode", inCourt);
+      document.body.classList.toggle("court-final-judge", inCourt && court?.finalJudge);
+      document.body.classList.toggle("investigation-mode", ["hotspot", "document", "vector", "match"].includes(ch.puzzle));
       $("#chapterNo").textContent = String(state.chapter + 1);
       $("#sceneKind").textContent = inCourt ? "모의 법정" : ch.kind;
       $("#sceneName").textContent = inCourt ? "부산환경법정 제1심리실" : ch.name;
@@ -2266,6 +2276,7 @@
         speaker: "강해란",
         who: "judge",
         line: "본 법정은 기장 양식장 주변 폐부표 관리 실패와 기록 은폐 가능성이 가장 높다고 판단합니다. 오염 차단 명령과 추가 조사를 선고합니다.",
+        finalJudge: true,
         choices: [{ text: "최종 결과 화면 보기", end: true }]
       }
     );
