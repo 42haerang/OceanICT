@@ -609,8 +609,8 @@
       padding-right: 0;
     }
     body.court-mode .character-row.side-right .character {
-      width: clamp(300px, 38vw, 455px);
-      transform: translate(-18px, 96px) scale(1);
+      width: clamp(265px, 33vw, 400px);
+      transform: translate(-34px, 96px) scale(1);
     }
     body.court-mode .character-row.active-judge {
       justify-content: center;
@@ -647,6 +647,30 @@
     }
     body.court-mode .bottom {
       display: none;
+    }
+    body.story-mode .visual-focus {
+      justify-items: end;
+    }
+    body.story-mode .focus-card {
+      width: min(620px, 62%);
+      margin-right: clamp(40px, 8vw, 120px);
+    }
+    body.story-mode .character-row {
+      height: calc(100% - 110px);
+      bottom: 96px;
+      z-index: 4;
+    }
+    body.story-mode .character-row.side-right {
+      justify-content: flex-start;
+      padding-left: clamp(54px, 9vw, 134px);
+      padding-right: 0;
+    }
+    body.story-mode .character-row.side-right .character {
+      width: clamp(360px, 45vw, 560px);
+      transform: translate(-18px, 70px) scale(1);
+    }
+    body.story-mode .character img {
+      max-height: min(690px, calc(100vh - 230px));
     }
     @media (max-width: 1050px) {
       body { overflow: auto; }
@@ -1744,6 +1768,7 @@
       document.body.classList.toggle("court-mode", inCourt);
       document.body.classList.toggle("court-ending", inCourt && state.ending);
       document.body.classList.toggle("investigation-mode", ["hotspot", "document", "vector", "match"].includes(ch.puzzle));
+      document.body.classList.toggle("story-mode", ch.puzzle === "story");
       $("#chapterNo").textContent = String(state.chapter + 1);
       $("#sceneKind").textContent = inCourt ? "모의 법정" : ch.kind;
       $("#sceneName").textContent = inCourt ? "부산환경법정 제1심리실" : ch.name;
@@ -2160,6 +2185,10 @@
       return `${meta.label} ${reportValue(id)}%`;
     }
 
+    function reportValueLabel(id) {
+      return reportValueMeta[id].label;
+    }
+
     function reportConditionText() {
       return `풍향 ${reportValue("windValue")}%, 해류 ${reportValue("currentValue")}%, 확산 ${reportValue("diffusionValue")}%`;
     }
@@ -2314,7 +2343,7 @@
       ["wind", "북서풍 관측 기록", "D-24 새벽 표층 이동을 뒤집는 핵심 조건."],
       ["rain", "폭우 유출 기록", "하천 부유물 증가를 설명하지만 단독 범인은 아님."],
       ["current", "역추적 해류 벡터", "D-45 후보군이 기장 양식장 방향으로 수렴."],
-      ["polymer", "폴리머 매칭 결과", "PE/PET/PP 이동 특성 분석표."],
+      ["polymer", "폴리머 매칭 결과", "밀도·부력 기반 PE/PET/PP 이동 특성 분석표."],
       ["testimony", "은폐 진술 녹취", "류도윤이 폭우 직후 부표 폐기 기록을 숨긴 정황."]
     );
 
@@ -2509,7 +2538,7 @@
               </div>
               <div class="target-list">
                 <strong>찾아야 할 표현</strong>
-                ${["windValue","currentValue","diffusionValue"].map(id => `<span class="target-word ${state.doc.has(id) ? "done" : ""}" data-report-value="${id}">${reportValueText(id)}</span>`).join("")}
+                ${["windValue","currentValue","diffusionValue"].map(id => `<span class="target-word ${state.doc.has(id) ? "done" : ""}">${reportValueLabel(id)}</span>`).join("")}
               </div>
             </div>
           </div>`;
@@ -2547,17 +2576,17 @@
       } else if (type === "match") {
         focus.innerHTML = `
           <div class="focus-card dark" style="width:min(760px,80%)">
-            <h3>중앙 폴리머 매칭 분석대</h3>
-            <p class="brief">왼쪽 물질을 고른 뒤 오른쪽 이동 특성을 누르세요. 3개가 맞으면 법정 제출용 분석표가 완성됩니다.</p>
+            <h3>폴리머-이동 특성 검증</h3>
+            <p class="brief">우리 탐구의 입자 역추적은 폴리머 밀도와 부력 차이를 이동 계수로 넣습니다. 현장 시료를 특성과 맞춰 법정 제출용 분석표를 완성하세요.</p>
             <div class="match-lab">
               <div class="match-stack">
                 ${["PET","PP","PE"].map(p => `<button class="match-card ${state.selectedPolymer === p ? "selected" : ""} ${state.matches[p] ? "done" : ""}" data-polymer="${p}">${p}</button>`).join("")}
               </div>
               <div class="trait-stack">
                 ${[
-                  ["PP","부표 파편과 맞는 낮은 밀도·강한 부력"],
-                  ["PE","물 위에 떠서 북서풍 영향을 크게 받음"],
-                  ["PET","상대적으로 가라앉아 해류 영향이 큼"]
+                  ["PP","부표 파편 후보: 낮은 밀도와 강한 부력으로 표층 잔류"],
+                  ["PE","비닐 조각 후보: 표층에 떠 북서풍 보정값 영향이 큼"],
+                  ["PET","병 조각 후보: 상대적으로 침강해 해류 벡터 영향이 큼"]
                 ].map(([id, text]) => `<button class="match-card ${Object.values(state.matches).includes(id) ? "done" : ""}" data-trait="${id}">${text}</button>`).join("")}
               </div>
             </div>
@@ -2623,7 +2652,7 @@
       } else if (type === "vector") {
         box.innerHTML = `<h3>자동 역추적</h3><p class="brief">보고서 증거값: ${reportConditionText()}. 다른 값을 넣어도 실행되지만 입자군이 발산해 잘못된 후보지가 나옵니다.</p>`;
       } else if (type === "match") {
-        box.innerHTML = `<h3>폴리머 매칭</h3><p class="brief">중앙 분석대에서 물질과 이동 특성을 직접 연결하세요.</p>`;
+        box.innerHTML = `<h3>폴리머 매칭</h3><p class="brief">밀도·부력·표층 잔류성을 연결해 입자별 이동 계수를 정리하세요. 이 표가 역추적 결과를 법정 증거로 바꿉니다.</p>`;
       } else if (type === "story") {
         box.innerHTML = `<h3>스토리 대면</h3><p class="brief">인물의 태도와 발언을 확인한 뒤 다음 장면으로 이동하세요.</p>`;
       } else {
@@ -3028,6 +3057,7 @@
       document.body.classList.add("start-mode");
       document.body.classList.remove("court-mode");
       document.body.classList.remove("investigation-mode");
+      document.body.classList.remove("story-mode");
       setSceneBackground(kind);
       $("#chapterNo").textContent = "-";
       $("#evidenceCount").textContent = `${state.found.size}/8`;
