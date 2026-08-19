@@ -1017,10 +1017,10 @@
       opacity: .86;
     }
     .title-cast img:nth-child(1) {
-      left: clamp(22px, 5vw, 74px);
-      bottom: -20px;
-      height: clamp(390px, 62vh, 545px);
-      max-width: min(34vw, 330px);
+      left: clamp(4px, 3.5vw, 44px);
+      bottom: -112px;
+      height: clamp(560px, 84vh, 720px);
+      max-width: min(44vw, 450px);
       transform: scaleX(-1);
     }
     .title-cast img:nth-child(2) {
@@ -1340,17 +1340,21 @@
       display: grid;
       place-items: end center;
     }
-    .codex-portrait img { width: auto; height: auto; max-width: 78%; max-height: 96%; object-fit: contain; object-position: bottom center; }
-    .codex-portrait img.portrait-analyst {
-      max-height: 94%;
-      max-width: 86%;
+    .codex-portrait img {
+      width: auto;
+      height: 118%;
+      max-width: none;
+      max-height: none;
+      object-fit: contain;
+      object-position: bottom center;
+      transform-origin: center bottom;
     }
+    .codex-portrait img.portrait-analyst { height: 122%; }
     .codex-portrait img.portrait-detective,
     .codex-portrait img.portrait-villain,
     .codex-portrait img.portrait-suspect,
     .codex-portrait img.portrait-judge {
-      max-height: 94%;
-      max-width: 88%;
+      height: 118%;
     }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
@@ -1361,7 +1365,8 @@
       .codex-body { grid-template-columns: 1fr; }
       .codex-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .codex-detail { grid-template-rows: minmax(340px, 54vh) auto auto; }
-      .codex-portrait img { max-width: 94%; max-height: 100%; }
+      .codex-portrait img { height: 118%; max-width: none; max-height: none; }
+      .codex-portrait img.portrait-analyst { height: 122%; }
     }
   </style>
 </head>
