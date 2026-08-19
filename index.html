@@ -1348,11 +1348,34 @@
       object-position: bottom center;
       transform-origin: center bottom;
     }
+    .codex-portrait img.portrait-analyst,
+    .codex-portrait img.portrait-suspect,
+    .codex-portrait img.portrait-villain,
+    .codex-portrait img.portrait-judge {
+      max-width: none;
+      max-height: none;
+    }
     .codex-portrait img.portrait-detective {
       max-width: none;
       max-height: none;
-      height: 154%;
-      transform: translateY(30%);
+      height: 134%;
+      transform: translate(-8%, 24%);
+    }
+    .codex-portrait img.portrait-analyst {
+      height: 156%;
+      transform: translateY(34%);
+    }
+    .codex-portrait img.portrait-suspect {
+      height: 132%;
+      transform: translateY(26%);
+    }
+    .codex-portrait img.portrait-villain {
+      height: 128%;
+      transform: translateY(24%);
+    }
+    .codex-portrait img.portrait-judge {
+      height: 138%;
+      transform: translateY(31%);
     }
     .codex-name { margin: 0; font-size: 20px; line-height: 1.15; color: var(--cyan2); }
     .codex-role { margin: 3px 0 0; color: var(--amber); font-size: 12px; font-weight: 900; }
@@ -1364,11 +1387,34 @@
       .codex-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .codex-detail { grid-template-rows: minmax(340px, 54vh) auto auto; }
       .codex-portrait img { max-width: 94%; max-height: 96%; }
+      .codex-portrait img.portrait-analyst,
+      .codex-portrait img.portrait-suspect,
+      .codex-portrait img.portrait-villain,
+      .codex-portrait img.portrait-judge {
+        max-width: none;
+        max-height: none;
+      }
       .codex-portrait img.portrait-detective {
         max-width: none;
         max-height: none;
-        height: 148%;
-        transform: translateY(28%);
+        height: 126%;
+        transform: translate(-8%, 20%);
+      }
+      .codex-portrait img.portrait-analyst {
+        height: 146%;
+        transform: translateY(31%);
+      }
+      .codex-portrait img.portrait-suspect {
+        height: 124%;
+        transform: translateY(22%);
+      }
+      .codex-portrait img.portrait-villain {
+        height: 120%;
+        transform: translateY(20%);
+      }
+      .codex-portrait img.portrait-judge {
+        height: 130%;
+        transform: translateY(27%);
       }
     }
   </style>
