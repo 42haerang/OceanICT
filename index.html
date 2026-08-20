@@ -276,6 +276,7 @@
       width: clamp(170px, 20vw, 238px);
     }
     .character.character-suspect,
+    .character.character-keeper,
     .character.character-villain,
     .character.character-judge {
       width: clamp(165px, 19vw, 230px);
@@ -672,7 +673,8 @@
       width: clamp(360px, 45vw, 560px);
       transform: translate(-18px, 70px) scale(1);
     }
-    body.story-mode .character-row.side-right .character.character-suspect {
+    body.story-mode .character-row.side-right .character.character-suspect,
+    body.story-mode .character-row.side-right .character.character-keeper {
       width: clamp(300px, 38vw, 470px);
       transform: translate(-18px, 82px) scale(1);
     }
@@ -1420,7 +1422,7 @@
       </div>
       <div class="status">
         <span>챕터 <strong id="chapterNo">1</strong></span>
-        <span>증거 <strong id="evidenceCount">0/8</strong></span>
+        <span>증거 <strong id="evidenceCount">0/0</strong></span>
         <span>신뢰도 <strong id="trustText">12%</strong></span>
       </div>
     </header>
@@ -1600,6 +1602,7 @@
       detective: "assets/hanbada-detective-v5.png",
       analyst: "assets/yunseo-analyst-v9.png",
       suspect: "assets/port-manager-v6.png",
+      keeper: "assets/hwang-keeper.png",
       villain: "assets/doyun-villain-v2.png",
       judge: "assets/judge-v3.png"
     };
@@ -1622,6 +1625,12 @@
         name: "탁민재",
         role: "부산항 야간 작업 책임자",
         desc: "항만 배출 가능성을 부정하지만 일부 기록과 현장 진술이 엇갈린다. 플레이어가 단서의 한계와 모순을 구분해야 하는 중간 증인."
+      },
+      {
+        id: "keeper",
+        name: "황정훈",
+        role: "은퇴 해양관측소 기사",
+        desc: "폐등대 관측소에서 수기 조류 기록을 지켜온 선역. 공식 데이터의 빈틈을 현장 기록으로 메워 역추적 조건을 보정하게 해준다."
       },
       {
         id: "villain",
@@ -1720,29 +1729,29 @@
     }
 
     function setCharacters(active) {
-      const rightSlot = active === "villain" ? "villain" : active === "judge" ? "judge" : "suspect";
+      const rightSlot = active === "villain" ? "villain" : active === "judge" ? "judge" : active === "keeper" ? "keeper" : "suspect";
       const map = { charDetective:"detective", charAnalyst:"analyst", charSuspect: rightSlot };
       const row = document.querySelector(".character-row");
       const focus = $("#visualFocus");
       row.classList.remove("side-left", "side-right", "active-judge");
       focus?.classList.remove("for-left", "for-right");
       if (active === "detective" || active === "analyst") row.classList.add("side-left");
-      if (active === "suspect" || active === "villain") row.classList.add("side-right");
+      if (active === "suspect" || active === "villain" || active === "keeper") row.classList.add("side-right");
       if (active === "judge") row.classList.add("active-judge");
       if (active === "detective" || active === "analyst") focus?.classList.add("for-left");
-      if (active === "suspect" || active === "villain") focus?.classList.add("for-right");
+      if (active === "suspect" || active === "villain" || active === "keeper") focus?.classList.add("for-right");
       Object.entries(map).forEach(([id, type]) => {
         const el = $("#" + id);
-        el.classList.remove("character-detective", "character-analyst", "character-suspect", "character-villain", "character-judge");
+        el.classList.remove("character-detective", "character-analyst", "character-suspect", "character-keeper", "character-villain", "character-judge");
         el.classList.add(`character-${type}`);
         el.innerHTML = `<img src="${characterImages[type]}" alt="${type}">`;
         el.classList.toggle("active", type === active);
         el.classList.toggle("dim", type !== active);
       });
-      const miniType = active === "judge" ? "judge" : active === "villain" ? "villain" : active === "suspect" ? "suspect" : active === "analyst" ? "analyst" : "detective";
+      const miniType = active === "judge" ? "judge" : active === "villain" ? "villain" : active === "keeper" ? "keeper" : active === "suspect" ? "suspect" : active === "analyst" ? "analyst" : "detective";
       $("#miniAvatar").innerHTML = `<img src="${characterImages[miniType]}" alt="">`;
-      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "analyst" ? "윤서" : active === "suspect" ? "탁민재" : "한바다";
-      $("#activeRole").textContent = active === "judge" ? "부산환경법정 재판장" : active === "villain" ? "해운물류그룹 배후 총책" : active === "analyst" ? "해류 데이터 분석관" : active === "suspect" ? "부산항 야간 작업 책임자" : "해양환경수사국 학생 탐정";
+      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "keeper" ? "황정훈" : active === "analyst" ? "윤서" : active === "suspect" ? "탁민재" : "한바다";
+      $("#activeRole").textContent = active === "judge" ? "부산환경법정 재판장" : active === "villain" ? "해운물류그룹 배후 총책" : active === "keeper" ? "은퇴 해양관측소 기사" : active === "analyst" ? "해류 데이터 분석관" : active === "suspect" ? "부산항 야간 작업 책임자" : "해양환경수사국 학생 탐정";
     }
 
     function renderCharacterCodex() {
@@ -1774,7 +1783,7 @@
       const court = trialScenes[state.trialPhase];
       document.body.classList.toggle("court-mode", inCourt);
       document.body.classList.toggle("court-ending", inCourt && state.ending);
-      document.body.classList.toggle("investigation-mode", ["hotspot", "document", "vector", "match"].includes(ch.puzzle));
+      document.body.classList.toggle("investigation-mode", ["hotspot", "document", "observatory", "vector", "match"].includes(ch.puzzle));
       document.body.classList.toggle("story-mode", ch.puzzle === "story");
       $("#chapterNo").textContent = String(state.chapter + 1);
       $("#sceneKind").textContent = inCourt ? "모의 법정" : ch.kind;
@@ -1904,8 +1913,8 @@
           <strong>${state.found.has(id) ? name : "미확인 증거"}</strong>
           <small>${state.found.has(id) ? desc : "수사 중 해금됩니다."}</small>
         </div>`).join("");
-      $("#evidenceCount").textContent = `${state.found.size}/8`;
-      $("#boardState").textContent = state.found.size >= 8 ? "완료" : "수집 중";
+      $("#evidenceCount").textContent = `${state.found.size}/${evidence.length}`;
+      $("#boardState").textContent = state.found.size >= evidence.length ? "완료" : "수집 중";
     }
 
     function renderPuzzle(type) {
@@ -2349,6 +2358,7 @@
       ["foam", "흰색 부표 파편", "양식장 부표 외피와 같은 발포 재질."],
       ["wind", "북서풍 관측 기록", "D-24 새벽 표층 이동을 뒤집는 핵심 조건."],
       ["rain", "폭우 유출 기록", "하천 부유물 증가를 설명하지만 단독 범인은 아님."],
+      ["observatory", "관측소 보정 기록", "수기 조류 노트, 풍향계, 격자 보정표를 묶어 해류 데이터의 빈 구간을 보완한 기록."],
       ["current", "역추적 해류 벡터", "D-45 후보군이 기장 양식장 방향으로 수렴."],
       ["polymer", "폴리머 매칭 결과", "밀도·부력 기반 PE/PET/PP 이동 특성 분석표."],
       ["testimony", "은폐 진술 녹취", "류도윤이 폭우 직후 부표 폐기 기록을 숨긴 정황."]
@@ -2449,8 +2459,8 @@
             <small>${state.found.has(id) ? desc : "수사 중 해금됩니다."}</small>
           </div>
         </div>`).join("");
-      $("#evidenceCount").textContent = `${state.found.size}/8`;
-      $("#boardState").textContent = state.found.size >= 8 ? "완료" : "수집 중";
+      $("#evidenceCount").textContent = `${state.found.size}/${evidence.length}`;
+      $("#boardState").textContent = state.found.size >= evidence.length ? "완료" : "수집 중";
     };
     renderEvidence = expandedRenderEvidence;
 
@@ -2890,6 +2900,8 @@
       state.finishedSaved = false;
       state.runId = (crypto?.randomUUID?.() || `run-${state.startedAt}-${Math.random().toString(16).slice(2)}`);
       state.reportValues = makeReportValues();
+      state.observatoryFound = new Set();
+      state.observatoryLayout = null;
       try {
         await saveTimeRecord({
           id: state.runId,
@@ -3047,9 +3059,347 @@
         document: "보고서 오른쪽 목표 단어와 같은 표현을 본문에서 찾으세요.",
         vector: `보고서 조건값은 ${reportConditionText()}입니다.`,
         match: "PE는 바람, PET는 해류, PP는 부표 파편의 부력과 연결됩니다.",
+        observatory: "잡동사니를 직접 드래그해서 치우고, 오른쪽 목표 바의 세 물품을 찾아 관측소 보정 기록으로 묶으세요.",
         trial: "단일 증거가 아니라 네 가지 조합 증거를 제출해야 합니다."
       };
       toast(hints[chapters[state.chapter].puzzle]);
+    };
+
+    const observatoryStyle = document.createElement("style");
+    observatoryStyle.textContent = `
+      .observatory-board {
+        width: min(860px, 78vw);
+        height: min(520px, calc(100vh - 230px));
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 185px;
+        gap: 14px;
+        margin: 0 auto;
+        pointer-events: auto;
+      }
+      .observatory-table {
+        position: relative;
+        overflow: hidden;
+        border: 3px solid rgba(255,255,255,.56);
+        background:
+          radial-gradient(circle at 30% 24%, rgba(255,212,93,.18), transparent 28%),
+          linear-gradient(135deg, rgba(33,26,21,.88), rgba(8,19,25,.88));
+        box-shadow: 0 18px 48px rgba(0,0,0,.48), inset 0 0 0 2px rgba(0,0,0,.7);
+      }
+      .observatory-table::before {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border: 1px dashed rgba(255,255,255,.16);
+        pointer-events: none;
+      }
+      .target-sidebar {
+        border: 2px solid rgba(255,212,93,.65);
+        background: rgba(4,10,18,.82);
+        padding: 12px;
+        box-shadow: 0 15px 34px rgba(0,0,0,.42);
+      }
+      .target-sidebar strong {
+        display: block;
+        color: var(--amber);
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+      .target-sidebar p {
+        color: var(--cyan2);
+        font-weight: 900;
+      }
+      .target-chip {
+        display: grid;
+        grid-template-columns: 32px 1fr;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        margin-bottom: 8px;
+        padding: 8px;
+        border: 1px solid rgba(255,255,255,.16);
+        background: rgba(255,255,255,.06);
+        color: #f6fbff;
+      }
+      .target-chip span {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border: 2px solid #061018;
+        background: var(--cyan);
+        color: #061018;
+        font-size: 17px;
+        font-weight: 1000;
+      }
+      .target-chip.done {
+        border-color: var(--green);
+        background: rgba(101,228,161,.16);
+      }
+      .clutter-item {
+        position: absolute;
+        min-width: 88px;
+        min-height: 62px;
+        transform: rotate(var(--rot));
+        border: 3px solid #071018;
+        background: linear-gradient(145deg, #f7f0d8, #9aa9b4);
+        color: #071018;
+        box-shadow: 6px 7px 0 rgba(0,0,0,.42);
+        cursor: grab;
+        touch-action: none;
+        font-weight: 1000;
+      }
+      .clutter-item:hover {
+        filter: brightness(1.1);
+        z-index: 5;
+      }
+      .clutter-item.dragging {
+        cursor: grabbing;
+        z-index: 20;
+        transform: rotate(0deg) scale(1.04);
+      }
+      .clutter-item.collected {
+        opacity: .22;
+        pointer-events: none;
+        filter: grayscale(1);
+      }
+      .clutter-item.target-item {
+        background: linear-gradient(145deg, #fff8c9, #35d4e4);
+      }
+      .junk-icon {
+        display: block;
+        font-size: 28px;
+        line-height: 1;
+      }
+      .junk-label {
+        display: block;
+        margin-top: 4px;
+        font-size: 10px;
+      }
+      @media (max-width: 900px) {
+        .observatory-board {
+          width: min(100%, 720px);
+          grid-template-columns: 1fr;
+          height: min(540px, calc(100vh - 210px));
+        }
+        .target-sidebar {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 6px;
+        }
+        .target-sidebar strong,
+        .target-sidebar p {
+          grid-column: 1 / -1;
+          margin: 0;
+        }
+      }
+    `;
+    document.head.appendChild(observatoryStyle);
+
+    const observatoryTargets = [
+      { id: "tideNote", label: "조류 관측 노트", icon: "▤", desc: "D-32 새벽, 등대 앞 조류가 공식 격자보다 0.12m/s 느렸다는 수기 기록." },
+      { id: "anemometer", label: "풍향계", icon: "↙", desc: "북서풍 보정값을 현장 장비로 확인하는 단서." },
+      { id: "gridTable", label: "격자 보정표", icon: "▦", desc: "NetCDF 격자와 실제 연안 관측점을 맞추는 시공간 보정표." }
+    ];
+    const observatoryClutter = [
+      ["oldBoot", "낡은 장화", "▱"], ["rope", "젖은 밧줄", "〰"], ["shellBox", "조개 표본 상자", "◒"],
+      ["coffee", "식은 커피잔", "◔"], ["battery", "방전된 배터리", "▭"], ["tin", "녹슨 통조림", "●"],
+      ["map", "찢어진 관광지도", "◇"], ["wrench", "스패너", "╱"], ["buoyTag", "낡은 부표 태그", "⬡"],
+      ["receipt", "영수증 뭉치", "▯"], ["gloves", "작업 장갑", "⌁"], ["flashlight", "꺼진 손전등", "◉"]
+    ];
+
+    function seededShuffle(list) {
+      const copy = [...list];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function ensureObservatoryState() {
+      if (!(state.observatoryFound instanceof Set)) state.observatoryFound = new Set(state.observatoryFound || []);
+      if (state.observatoryLayout) return;
+      const pool = seededShuffle([
+        ...observatoryTargets.map(item => ({ ...item, target: true })),
+        ...observatoryClutter.map(([id, label, icon]) => ({ id, label, icon, target: false }))
+      ]);
+      const slots = [
+        [8, 14], [24, 12], [40, 16], [58, 13], [72, 19],
+        [14, 34], [33, 32], [49, 36], [66, 34], [82, 39],
+        [10, 57], [28, 61], [46, 58], [62, 64], [78, 59]
+      ];
+      state.observatoryLayout = pool.map((item, index) => {
+        const [left, top] = slots[index % slots.length];
+        return { ...item, left: left + Math.random() * 4 - 2, top: top + Math.random() * 5 - 2, rot: Math.round(Math.random() * 32 - 16) };
+      });
+    }
+
+    function collectObservatoryItem(id) {
+      ensureObservatoryState();
+      const target = observatoryTargets.find(item => item.id === id);
+      if (!target || state.observatoryFound.has(id)) return;
+      state.observatoryFound.add(id);
+      if (state.observatoryFound.size >= observatoryTargets.length) {
+        state.found.add("observatory");
+        state.trust = Math.min(100, state.trust + 9);
+        toast("관측소 보정 기록 확보. 공식 데이터의 빈틈을 메웠습니다.");
+      } else {
+        toast(`${target.label} 확보`);
+      }
+      render();
+    }
+
+    function renderObservatoryBoard() {
+      ensureObservatoryState();
+      const targetHtml = observatoryTargets.map(item => `
+        <div class="target-chip ${state.observatoryFound.has(item.id) ? "done" : ""}">
+          <span>${item.icon}</span><b>${item.label}</b>
+        </div>`).join("");
+      const itemHtml = state.observatoryLayout.map(item => `
+        <button class="clutter-item ${item.target ? "target-item" : ""} ${state.observatoryFound.has(item.id) ? "collected" : ""}"
+          type="button" data-observatory-item="${item.id}" data-target="${item.target}"
+          style="left:${item.left}%;top:${item.top}%;--rot:${item.rot}deg">
+          <span class="junk-icon">${item.icon}</span><span class="junk-label">${item.label}</span>
+        </button>`).join("");
+      return `
+        <div class="observatory-board">
+          <div class="observatory-table">${itemHtml}</div>
+          <aside class="target-sidebar">
+            <strong>찾아야 할 물품</strong>
+            ${targetHtml}
+            <p>${state.observatoryFound.size}/3 확보</p>
+          </aside>
+        </div>`;
+    }
+
+    function bindObservatoryPuzzle(root) {
+      root.querySelectorAll(".clutter-item").forEach(el => {
+        let dragging = false;
+        let moved = false;
+        let startX = 0;
+        let startY = 0;
+        let left = 0;
+        let top = 0;
+        el.onpointerdown = event => {
+          if (el.classList.contains("collected")) return;
+          dragging = true;
+          moved = false;
+          startX = event.clientX;
+          startY = event.clientY;
+          left = el.offsetLeft;
+          top = el.offsetTop;
+          el.setPointerCapture(event.pointerId);
+          el.classList.add("dragging");
+        };
+        el.onpointermove = event => {
+          if (!dragging) return;
+          const board = el.closest(".observatory-table");
+          const rect = board.getBoundingClientRect();
+          const dx = event.clientX - startX;
+          const dy = event.clientY - startY;
+          if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+          el.style.left = `${Math.max(0, Math.min(rect.width - el.offsetWidth, left + dx))}px`;
+          el.style.top = `${Math.max(0, Math.min(rect.height - el.offsetHeight, top + dy))}px`;
+        };
+        el.onpointerup = event => {
+          if (!dragging) return;
+          dragging = false;
+          el.classList.remove("dragging");
+          el.releasePointerCapture(event.pointerId);
+          if (!moved && el.dataset.target === "true") collectObservatoryItem(el.dataset.observatoryItem);
+          else if (!moved) toast("이건 목표 물품이 아닙니다. 치우면서 숨은 물건을 찾아보세요.");
+        };
+      });
+    }
+
+    evidenceIcons.observatory = "▣";
+    Object.assign(state, { observatoryFound: new Set(), observatoryLayout: null });
+    sceneBackgrounds.observatory = "assets/lighthouse-observatory-bg.png";
+
+    if (!chapters.some(ch => ch.puzzle === "observatory")) {
+      const vectorIndex = chapters.findIndex(ch => ch.puzzle === "vector");
+      chapters.splice(vectorIndex, 0,
+        {
+          kind: "대면 조사",
+          name: "폐등대 관측소 입구",
+          speaker: "황정훈",
+          who: "keeper",
+          line: "“공식 데이터만 믿으면 여기 바다는 절반만 보이는 거야. 새벽 조류는 등대 그림자처럼 살짝 어긋난다. 그 어긋남을 못 잡으면 역추적은 엉뚱한 곳으로 흘러.”",
+          mission: ["황정훈에게 수기 관측 기록의 의미 듣기", "관측소 내부 수색 준비"],
+          puzzle: "story",
+          background: "observatory"
+        },
+        {
+          kind: "대면 조사",
+          name: "폐등대 관측소 입구",
+          speaker: "윤서",
+          who: "analyst",
+          line: "“우리 보고서의 풍향, 해류, 확산 오차는 관측망 기반 값이야. 그런데 연안처럼 격자가 거친 곳은 현장 기록이 들어가야 입자 구름이 실제 해역으로 수렴해.”",
+          mission: ["공식 데이터와 현장 기록의 차이 확인", "보정 근거 확보"],
+          puzzle: "story",
+          background: "observatory"
+        },
+        {
+          kind: "대면 조사",
+          name: "폐등대 관측소 입구",
+          speaker: "한바다",
+          who: "detective",
+          line: "“좋아. 조류 관측 노트, 풍향계, 그리고 격자 보정표. 세 개만 찾으면 시뮬레이션의 빈 칸을 채울 수 있어.”",
+          mission: ["찾아야 할 물품 3개 확인", "관측소 수색 시작"],
+          puzzle: "story",
+          background: "observatory"
+        },
+        {
+          kind: "관측소 수색",
+          name: "황정훈의 등대 관측실",
+          speaker: "황정훈",
+          who: "keeper",
+          line: "“먼지가 좀 많다. 그래도 버린 건 없어. 잡동사니를 직접 치우면서 필요한 물건을 찾아봐.”",
+          mission: ["잡동사니를 드래그해 숨은 물품 찾기", "목표 물품 3개로 관측소 보정 기록 확보"],
+          puzzle: "observatory",
+          background: "observatory"
+        }
+      );
+    }
+
+    const baseEvidenceIsComplete = evidenceIsComplete;
+    evidenceIsComplete = function(type) {
+      return type === "observatory" ? state.found.has("observatory") : baseEvidenceIsComplete(type);
+    };
+
+    const baseRenderPuzzle = renderPuzzle;
+    renderPuzzle = function(type) {
+      if (type !== "observatory") {
+        baseRenderPuzzle(type);
+        return;
+      }
+      $("#puzzleArea").innerHTML = `
+        <h3>등대 관측소 수색</h3>
+        <p class="brief">중앙 책상 위 잡동사니를 드래그해서 치우고, 목표 바에 적힌 세 물품을 클릭해 확보하세요.</p>
+        <div class="mini-buttons">
+          ${observatoryTargets.map(item => `<button class="${state.observatoryFound.has(item.id) ? "selected" : ""}" type="button">${item.label}</button>`).join("")}
+        </div>`;
+    };
+
+    const baseRenderVisualFocus = renderVisualFocus;
+    renderVisualFocus = function(type) {
+      if (type !== "observatory") {
+        baseRenderVisualFocus(type);
+        return;
+      }
+      const focus = $("#visualFocus");
+      focus.innerHTML = renderObservatoryBoard();
+      bindObservatoryPuzzle(focus);
+    };
+
+    const baseRenderMissions = renderMissions;
+    renderMissions = function(ch) {
+      if (ch.puzzle !== "observatory") {
+        baseRenderMissions(ch);
+        return;
+      }
+      const doneMap = [state.observatoryFound.size >= observatoryTargets.length, state.found.has("observatory")];
+      $("#missionList").innerHTML = ch.mission.map((m, i) => `<li class="${doneMap[i] ? "done" : ""}">${m}</li>`).join("");
     };
 
     function setSceneBackground(type) {
@@ -3067,7 +3417,7 @@
       document.body.classList.remove("story-mode");
       setSceneBackground(kind);
       $("#chapterNo").textContent = "-";
-      $("#evidenceCount").textContent = `${state.found.size}/8`;
+      $("#evidenceCount").textContent = `${state.found.size}/${evidence.length}`;
       $("#trustText").textContent = `${state.trust}%`;
       $("#sceneKind").textContent = kind === "title" ? "오션 디텍티브" : "사건 브리핑";
       $("#sceneName").textContent = kind === "title" ? "플라스틱을 역추적하라" : "2035 부산 연안 미세플라스틱 사건";
@@ -3152,7 +3502,8 @@
       }
       document.body.classList.remove("start-mode");
       gameplayRender();
-      setSceneBackground(state.ending ? "trial" : chapters[state.chapter].puzzle);
+      const bgType = state.ending ? "trial" : (chapters[state.chapter].background || chapters[state.chapter].puzzle);
+      setSceneBackground(bgType);
       const oldFlash = $("#verdictFlash");
       if (oldFlash) oldFlash.remove();
       if (state.verdictFlash) {
