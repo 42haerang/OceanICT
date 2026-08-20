@@ -313,7 +313,7 @@
       width: clamp(305px, 38vw, 455px);
     }
     body.investigation-mode .character.character-analyst {
-      width: clamp(315px, 39vw, 465px);
+      width: clamp(350px, 42vw, 535px);
     }
     body.investigation-mode .character img {
       max-height: min(700px, calc(100vh - 190px));
@@ -324,6 +324,9 @@
     }
     body.investigation-mode .character-row.side-left .character.active {
       transform: translate(-48px, 176px) scale(1.12);
+    }
+    body.investigation-mode .character-row.side-left .character.character-analyst.active {
+      transform: translate(-42px, 168px) scale(1.18);
     }
     body.investigation-mode .character-row.side-right .character.active {
       transform: translate(48px, 176px) scale(1.12);
@@ -610,7 +613,7 @@
     }
     body.court-mode .character-row.side-right .character {
       width: clamp(265px, 33vw, 400px);
-      transform: translate(-34px, 96px) scale(1);
+      transform: translate(-34px, 76px) scale(1);
     }
     body.court-mode .character-row.active-judge {
       justify-content: center;
@@ -668,6 +671,10 @@
     body.story-mode .character-row.side-right .character {
       width: clamp(360px, 45vw, 560px);
       transform: translate(-18px, 70px) scale(1);
+    }
+    body.story-mode .character-row.side-right .character.character-suspect {
+      width: clamp(300px, 38vw, 470px);
+      transform: translate(-18px, 82px) scale(1);
     }
     body.story-mode .character img {
       max-height: min(690px, calc(100vh - 230px));
