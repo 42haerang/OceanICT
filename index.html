@@ -681,6 +681,15 @@
     body.story-mode .character img {
       max-height: min(690px, calc(100vh - 230px));
     }
+    body.observatory-story-mode .character-row.side-left {
+      justify-content: flex-start;
+      padding-left: clamp(44px, 7vw, 112px);
+    }
+    body.observatory-story-mode .character-row.side-left .character.character-detective,
+    body.observatory-story-mode .character-row.side-left .character.character-analyst {
+      width: clamp(410px, 48vw, 610px);
+      transform: translate(-32px, 74px) scale(1);
+    }
     @media (max-width: 1050px) {
       body { overflow: auto; }
       .game { height: auto; min-height: 100vh; grid-template-rows: auto auto auto; }
@@ -3110,26 +3119,19 @@
       }
       .target-chip {
         display: grid;
-        grid-template-columns: 32px 1fr;
-        align-items: center;
-        gap: 8px;
-        min-height: 44px;
+        place-items: center;
+        min-height: 86px;
         margin-bottom: 8px;
         padding: 8px;
         border: 1px solid rgba(255,255,255,.16);
         background: rgba(255,255,255,.06);
         color: #f6fbff;
       }
-      .target-chip span {
-        display: grid;
-        place-items: center;
-        width: 30px;
-        height: 30px;
-        border: 2px solid #061018;
-        background: var(--cyan);
-        color: #061018;
-        font-size: 17px;
-        font-weight: 1000;
+      .target-chip img {
+        width: 100%;
+        height: 76px;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 8px rgba(0,0,0,.42));
       }
       .target-chip.done {
         border-color: var(--green);
@@ -3137,20 +3139,22 @@
       }
       .clutter-item {
         position: absolute;
-        min-width: 88px;
-        min-height: 62px;
+        width: var(--w);
+        height: var(--h);
+        min-width: 0;
+        min-height: 0;
         transform: rotate(var(--rot));
-        border: 3px solid #071018;
-        background: linear-gradient(145deg, #f7f0d8, #9aa9b4);
+        border: 0;
+        background: transparent;
         color: #071018;
-        box-shadow: 6px 7px 0 rgba(0,0,0,.42);
+        box-shadow: none;
         cursor: grab;
         touch-action: none;
         font-weight: 1000;
+        padding: 0;
       }
       .clutter-item:hover {
         filter: brightness(1.1);
-        z-index: 5;
       }
       .clutter-item.dragging {
         cursor: grabbing;
@@ -3158,22 +3162,30 @@
         transform: rotate(0deg) scale(1.04);
       }
       .clutter-item.collected {
-        opacity: .22;
-        pointer-events: none;
-        filter: grayscale(1);
+        display: none;
       }
       .clutter-item.target-item {
-        background: linear-gradient(145deg, #fff8c9, #35d4e4);
+        filter: drop-shadow(0 0 14px rgba(255,212,93,.18));
       }
-      .junk-icon {
-        display: block;
-        font-size: 28px;
-        line-height: 1;
+      .clutter-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+        user-select: none;
+        filter: drop-shadow(7px 8px 0 rgba(0,0,0,.38));
       }
-      .junk-label {
-        display: block;
-        margin-top: 4px;
-        font-size: 10px;
+      .observatory-mini-targets {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .observatory-mini-targets button {
+        min-height: 70px;
+      }
+      .observatory-mini-targets img {
+        width: 100%;
+        height: 56px;
+        object-fit: contain;
       }
       @media (max-width: 900px) {
         .observatory-board {
@@ -3196,15 +3208,25 @@
     document.head.appendChild(observatoryStyle);
 
     const observatoryTargets = [
-      { id: "tideNote", label: "조류 관측 노트", icon: "▤", desc: "D-32 새벽, 등대 앞 조류가 공식 격자보다 0.12m/s 느렸다는 수기 기록." },
-      { id: "anemometer", label: "풍향계", icon: "↙", desc: "북서풍 보정값을 현장 장비로 확인하는 단서." },
-      { id: "gridTable", label: "격자 보정표", icon: "▦", desc: "NetCDF 격자와 실제 연안 관측점을 맞추는 시공간 보정표." }
+      { id: "tideNote", label: "조류 관측 노트", src: "assets/obs-target-note.png", w: 136, h: 142, desc: "D-32 새벽, 등대 앞 조류가 공식 격자보다 0.12m/s 느렸다는 수기 기록." },
+      { id: "anemometer", label: "풍향계", src: "assets/obs-target-vane.png", w: 142, h: 142, desc: "북서풍 보정값을 현장 장비로 확인하는 단서." },
+      { id: "gridTable", label: "격자 보정표", src: "assets/obs-target-grid.png", w: 132, h: 132, desc: "NetCDF 격자와 실제 연안 관측점을 맞추는 시공간 보정표." }
     ];
     const observatoryClutter = [
-      ["oldBoot", "낡은 장화", "▱"], ["rope", "젖은 밧줄", "〰"], ["shellBox", "조개 표본 상자", "◒"],
-      ["coffee", "식은 커피잔", "◔"], ["battery", "방전된 배터리", "▭"], ["tin", "녹슨 통조림", "●"],
-      ["map", "찢어진 관광지도", "◇"], ["wrench", "스패너", "╱"], ["buoyTag", "낡은 부표 태그", "⬡"],
-      ["receipt", "영수증 뭉치", "▯"], ["gloves", "작업 장갑", "⌁"], ["flashlight", "꺼진 손전등", "◉"]
+      { id: "flashlight", label: "꺼진 손전등", src: "assets/obs-clutter-flashlight.png", w: 154, h: 86, copies: 2 },
+      { id: "rope", label: "젖은 밧줄", src: "assets/obs-clutter-rope.png", w: 172, h: 124, copies: 1 },
+      { id: "gloves", label: "작업 장갑", src: "assets/obs-clutter-gloves.png", w: 116, h: 112, copies: 2 },
+      { id: "boots", label: "낡은 장화", src: "assets/obs-clutter-boots.png", w: 130, h: 122, copies: 1 },
+      { id: "shellBox", label: "조개 표본 상자", src: "assets/obs-clutter-shellbox.png", w: 152, h: 110, copies: 1 },
+      { id: "receipt", label: "영수증 뭉치", src: "assets/obs-clutter-receipts.png", w: 106, h: 96, copies: 2 },
+      { id: "tin", label: "녹슨 통조림", src: "assets/obs-clutter-can.png", w: 92, h: 104, copies: 3 },
+      { id: "battery", label: "방전된 배터리", src: "assets/obs-clutter-battery.png", w: 112, h: 94, copies: 2 },
+      { id: "wrench", label: "스패너", src: "assets/obs-clutter-wrench.png", w: 152, h: 76, copies: 2 },
+      { id: "map", label: "찢어진 관광지도", src: "assets/obs-clutter-map.png", w: 180, h: 118, copies: 1 },
+      { id: "buoyTag", label: "낡은 부표 태그", src: "assets/obs-clutter-buoy-tag.png", w: 88, h: 118, copies: 3 },
+      { id: "coffee", label: "식은 커피잔", src: "assets/obs-clutter-coffee.png", w: 82, h: 110, copies: 3 },
+      { id: "wallet", label: "낡은 지갑", src: "assets/obs-clutter-wallet.png", w: 116, h: 90, copies: 2 },
+      { id: "pen", label: "녹슨 펜", src: "assets/obs-clutter-pen.png", w: 142, h: 68, copies: 3 }
     ];
 
     function seededShuffle(list) {
@@ -3219,19 +3241,41 @@
     function ensureObservatoryState() {
       if (!(state.observatoryFound instanceof Set)) state.observatoryFound = new Set(state.observatoryFound || []);
       if (state.observatoryLayout) return;
-      const pool = seededShuffle([
-        ...observatoryTargets.map(item => ({ ...item, target: true })),
-        ...observatoryClutter.map(([id, label, icon]) => ({ id, label, icon, target: false }))
+      const jitter = (amount) => Math.random() * amount * 2 - amount;
+      const targetSlots = seededShuffle([[18, 17], [45, 35], [66, 56]]);
+      const targets = observatoryTargets.map((item, index) => ({
+        ...item,
+        target: true,
+        key: `target-${item.id}`,
+        left: targetSlots[index][0] + jitter(2),
+        top: targetSlots[index][1] + jitter(2),
+        rot: Math.round(jitter(8)),
+        z: 2
+      }));
+      const clutterPool = seededShuffle(observatoryClutter.flatMap(item =>
+        Array.from({ length: item.copies }, (_, copy) => ({ ...item, target: false, copy }))
+      ));
+      const coverSlots = targets.flatMap(target => [
+        [target.left - 3 + jitter(4), target.top - 2 + jitter(4), 7],
+        [target.left + 7 + jitter(4), target.top + 7 + jitter(4), 8]
       ]);
-      const slots = [
-        [8, 14], [24, 12], [40, 16], [58, 13], [72, 19],
-        [14, 34], [33, 32], [49, 36], [66, 34], [82, 39],
-        [10, 57], [28, 61], [46, 58], [62, 64], [78, 59]
+      const scatterSlots = [
+        [7, 10], [30, 12], [54, 11], [77, 14],
+        [12, 36], [31, 44], [56, 40], [81, 36],
+        [8, 63], [29, 66], [49, 64], [75, 62]
       ];
-      state.observatoryLayout = pool.map((item, index) => {
-        const [left, top] = slots[index % slots.length];
-        return { ...item, left: left + Math.random() * 4 - 2, top: top + Math.random() * 5 - 2, rot: Math.round(Math.random() * 32 - 16) };
+      const clutter = clutterPool.map((item, index) => {
+        const slot = index < coverSlots.length ? coverSlots[index] : scatterSlots[(index - coverSlots.length) % scatterSlots.length];
+        return {
+          ...item,
+          key: `${item.id}-${item.copy}-${index}`,
+          left: Math.max(1, Math.min(86, slot[0] + jitter(3))),
+          top: Math.max(1, Math.min(77, slot[1] + jitter(4))),
+          rot: Math.round(jitter(18)),
+          z: slot[2] || 5
+        };
       });
+      state.observatoryLayout = [...targets, ...clutter];
     }
 
     function collectObservatoryItem(id) {
@@ -3253,13 +3297,13 @@
       ensureObservatoryState();
       const targetHtml = observatoryTargets.map(item => `
         <div class="target-chip ${state.observatoryFound.has(item.id) ? "done" : ""}">
-          <span>${item.icon}</span><b>${item.label}</b>
+          <img src="${item.src}" alt="${item.label}">
         </div>`).join("");
       const itemHtml = state.observatoryLayout.map(item => `
         <button class="clutter-item ${item.target ? "target-item" : ""} ${state.observatoryFound.has(item.id) ? "collected" : ""}"
-          type="button" data-observatory-item="${item.id}" data-target="${item.target}"
-          style="left:${item.left}%;top:${item.top}%;--rot:${item.rot}deg">
-          <span class="junk-icon">${item.icon}</span><span class="junk-label">${item.label}</span>
+          type="button" data-observatory-key="${item.key}" data-observatory-item="${item.id}" data-target="${item.target}"
+          style="left:${item.left}%;top:${item.top}%;--rot:${item.rot}deg;--w:${item.w}px;--h:${item.h}px;z-index:${item.z}">
+          <img src="${item.src}" alt="${item.label}">
         </button>`).join("");
       return `
         <div class="observatory-board">
@@ -3298,14 +3342,23 @@
           const dx = event.clientX - startX;
           const dy = event.clientY - startY;
           if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
-          el.style.left = `${Math.max(0, Math.min(rect.width - el.offsetWidth, left + dx))}px`;
-          el.style.top = `${Math.max(0, Math.min(rect.height - el.offsetHeight, top + dy))}px`;
+          const nextLeft = Math.max(0, Math.min(rect.width - el.offsetWidth, left + dx));
+          const nextTop = Math.max(0, Math.min(rect.height - el.offsetHeight, top + dy));
+          el.style.left = `${(nextLeft / rect.width) * 100}%`;
+          el.style.top = `${(nextTop / rect.height) * 100}%`;
         };
         el.onpointerup = event => {
           if (!dragging) return;
           dragging = false;
           el.classList.remove("dragging");
           el.releasePointerCapture(event.pointerId);
+          const saved = state.observatoryLayout.find(item => item.key === el.dataset.observatoryKey);
+          if (saved) {
+            saved.left = parseFloat(el.style.left);
+            saved.top = parseFloat(el.style.top);
+            saved.rot = 0;
+            saved.z = moved ? 12 : saved.z;
+          }
           if (!moved && el.dataset.target === "true") collectObservatoryItem(el.dataset.observatoryItem);
           else if (!moved) toast("이건 목표 물품이 아닙니다. 치우면서 숨은 물건을 찾아보세요.");
         };
@@ -3375,9 +3428,9 @@
       }
       $("#puzzleArea").innerHTML = `
         <h3>등대 관측소 수색</h3>
-        <p class="brief">중앙 책상 위 잡동사니를 드래그해서 치우고, 목표 바에 적힌 세 물품을 클릭해 확보하세요.</p>
-        <div class="mini-buttons">
-          ${observatoryTargets.map(item => `<button class="${state.observatoryFound.has(item.id) ? "selected" : ""}" type="button">${item.label}</button>`).join("")}
+        <p class="brief">중앙 책상 위 잡동사니를 드래그해서 치우고, 오른쪽 목표 이미지와 같은 세 물품을 클릭해 확보하세요.</p>
+        <div class="mini-buttons observatory-mini-targets">
+          ${observatoryTargets.map(item => `<button class="${state.observatoryFound.has(item.id) ? "selected" : ""}" type="button"><img src="${item.src}" alt="${item.label}"></button>`).join("")}
         </div>`;
     };
 
@@ -3415,6 +3468,7 @@
       document.body.classList.remove("court-mode");
       document.body.classList.remove("investigation-mode");
       document.body.classList.remove("story-mode");
+      document.body.classList.remove("observatory-story-mode");
       setSceneBackground(kind);
       $("#chapterNo").textContent = "-";
       $("#evidenceCount").textContent = `${state.found.size}/${evidence.length}`;
@@ -3502,6 +3556,7 @@
       }
       document.body.classList.remove("start-mode");
       gameplayRender();
+      document.body.classList.toggle("observatory-story-mode", !state.ending && chapters[state.chapter]?.background === "observatory" && chapters[state.chapter]?.puzzle === "story");
       const bgType = state.ending ? "trial" : (chapters[state.chapter].background || chapters[state.chapter].puzzle);
       setSceneBackground(bgType);
       const oldFlash = $("#verdictFlash");
