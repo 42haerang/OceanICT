@@ -971,6 +971,47 @@
       background: rgba(40,212,232,.16);
       border-color: rgba(40,212,232,.5);
     }
+    .evidence-grid.case-board {
+      position: relative;
+      gap: 10px;
+      padding-left: 10px;
+    }
+    .evidence-grid.case-board::before {
+      content: "";
+      position: absolute;
+      left: 28px;
+      top: 20px;
+      bottom: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(255,212,93,.2), rgba(40,212,232,.72), rgba(255,212,93,.2));
+      box-shadow: 0 0 18px rgba(40,212,232,.3);
+    }
+    .evidence.case-node {
+      position: relative;
+      border-style: solid;
+    }
+    .evidence.case-node::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      width: 18px;
+      height: 2px;
+      background: rgba(255,212,93,.62);
+    }
+    .evidence.case-node.found {
+      box-shadow: inset 0 0 0 1px rgba(40,212,232,.26), 0 0 18px rgba(40,212,232,.12);
+    }
+    .evidence-thread {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,212,93,.28);
+      color: var(--amber);
+      background: rgba(255,212,93,.08);
+      font-size: 10px;
+      font-weight: 900;
+    }
     .ending-card {
       width: min(720px, 86%);
       margin-left: auto;
@@ -1002,6 +1043,106 @@
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.05);
       padding: 10px;
+    }
+    .ending-report {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+      text-align: left;
+    }
+    .ending-report section {
+      border: 1px solid rgba(40,212,232,.24);
+      background: rgba(255,255,255,.045);
+      padding: 12px;
+    }
+    .ending-report h3 {
+      margin: 0 0 8px;
+      color: var(--cyan2);
+      font-size: 14px;
+    }
+    .ending-proof-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .ending-proof-list span {
+      border: 1px solid rgba(255,212,93,.24);
+      background: rgba(255,212,93,.07);
+      padding: 8px;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .defeat-row {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: clamp(18px, 5vw, 58px);
+      margin: 6px 0 12px;
+      min-height: 150px;
+      overflow: hidden;
+    }
+    .defeat-row figure {
+      margin: 0;
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .defeat-row img {
+      width: clamp(120px, 16vw, 190px);
+      height: 155px;
+      object-fit: cover;
+      object-position: top center;
+      filter: grayscale(.42) saturate(.72) brightness(.78);
+      transform: translateY(22px) rotate(var(--tilt));
+      opacity: .86;
+    }
+    .court-reaction {
+      position: relative;
+      width: min(720px, 72%);
+      min-height: 330px;
+      margin-left: auto;
+      margin-right: clamp(24px, 5vw, 70px);
+      border: 3px solid rgba(255,212,93,.72);
+      background: linear-gradient(135deg, rgba(55,9,18,.9), rgba(5,13,22,.92));
+      box-shadow: 0 22px 60px rgba(0,0,0,.56);
+      overflow: hidden;
+    }
+    .court-reaction::before {
+      content: "반박!";
+      position: absolute;
+      right: 24px;
+      top: 18px;
+      color: rgba(255,212,93,.18);
+      font-size: clamp(44px, 7vw, 86px);
+      font-weight: 1000;
+      transform: rotate(-8deg);
+    }
+    .court-reaction img {
+      position: absolute;
+      right: 28px;
+      bottom: -42px;
+      width: clamp(230px, 34vw, 390px);
+      filter: contrast(1.1) saturate(.7);
+      transform: rotate(-3deg);
+    }
+    .court-reaction .shock-lines {
+      position: absolute;
+      inset: 0;
+      background: repeating-radial-gradient(circle at 72% 48%, rgba(255,255,255,.2) 0 2px, transparent 2px 18px);
+      opacity: .2;
+    }
+    .court-reaction .reaction-caption {
+      position: absolute;
+      left: 24px;
+      bottom: 22px;
+      width: min(320px, 45%);
+      color: #fff;
+      font-weight: 1000;
+      font-size: clamp(20px, 3vw, 36px);
+      text-shadow: 0 3px 0 #000;
     }
     .start-screen {
       width: min(760px, 88%);
@@ -2423,22 +2564,28 @@
         proof: true
       },
       {
+        speaker: "류도윤",
+        who: "villain",
+        line: "그럴 리가... 모델 오차를 걸고 넘어지면 끝날 줄 알았는데, 관측소 보정값까지 맞춰 왔다고?",
+        choices: [{ text: "류도윤의 동요를 놓치지 않는다.", next: 8 }]
+      },
+      {
         speaker: "윤서",
         who: "analyst",
         line: "폴리머 매칭도 일치합니다. PE는 표층 바람에 민감했고, PP 부표 파편은 양식장 부표 외피와 부력·마모 패턴이 같습니다.",
-        choices: [{ text: "은폐 정황을 추궁한다.", next: 8 }]
+        choices: [{ text: "은폐 정황을 추궁한다.", next: 9 }]
       },
       {
         speaker: "류도윤",
         who: "villain",
         line: "기록 누락은 단순 행정 실수입니다. 폭우 직후 폐부표 반출 기록이 비어 있는 것과 이 사건은 관계없습니다.",
-        choices: [{ text: "마지막 모순을 지적한다.", objection: true, next: 9 }]
+        choices: [{ text: "마지막 모순을 지적한다.", objection: true, next: 10 }]
       },
       {
         speaker: "한바다",
         who: "detective",
         line: "반출 기록이 비어 있는 바로 그 시간대에 시민 제보 사진이 있습니다. 양식장 앞 해역에서 같은 흰색 부표 파편이 떠내려가고 있었습니다.",
-        choices: [{ text: "판결을 요청한다.", next: 10 }]
+        choices: [{ text: "판결을 요청한다.", next: 11 }]
       },
       {
         speaker: "강해란",
@@ -2460,12 +2607,26 @@
     }
 
     const expandedRenderEvidence = () => {
-      $("#evidenceGrid").innerHTML = evidence.map(([id, name, desc]) => `
-        <div class="evidence ${state.found.has(id) ? "found" : ""}">
+      const links = {
+        pe: "풍향",
+        fiber: "혼동 단서",
+        foam: "양식장",
+        wind: "표층 이동",
+        rain: "확산 보정",
+        observatory: "격자 보정",
+        current: "D-45 수렴",
+        polymer: "재질 검증",
+        testimony: "은폐 정황"
+      };
+      const grid = $("#evidenceGrid");
+      grid.classList.add("case-board");
+      grid.innerHTML = evidence.map(([id, name, desc]) => `
+        <div class="evidence case-node ${state.found.has(id) ? "found" : ""}">
           <div class="evidence-thumb" aria-hidden="true">${state.found.has(id) ? evidenceIcons[id] : "?"}</div>
           <div>
             <strong>${state.found.has(id) ? name : "미확인 증거"}</strong>
             <small>${state.found.has(id) ? desc : "수사 중 해금됩니다."}</small>
+            <em class="evidence-thread">${state.found.has(id) ? links[id] : "미연결"}</em>
           </div>
         </div>`).join("");
       $("#evidenceCount").textContent = `${state.found.size}/${evidence.length}`;
@@ -2623,17 +2784,36 @@
         focus.innerHTML = `
           <div class="ending-card">
             <span class="win-title">승소!</span>
-            <h2>판결 선고 완료</h2>
+            <h2>최종 판결 보고서</h2>
             <div class="run-summary">${state.playerName || "익명"} 수사관 기록: ${formatDuration(currentRunDuration())} ${state.penaltyMs ? `(패소 페널티 +${Math.round(state.penaltyMs / 1000)}초)` : ""}</div>
-            <p>현재의 미세플라스틱 흔적을 거꾸로 읽어 오염원의 과거를 복원했습니다. 기장 양식장 주변 폐부표 관리 실패와 기록 은폐 가능성이 인정되었습니다.</p>
+            <div class="defeat-row" aria-label="패소한 피고 측">
+              <figure><img src="${characterImages.suspect}" alt="탁민재" style="--tilt:-4deg"><figcaption>탁민재 침묵</figcaption></figure>
+              <figure><img src="${characterImages.villain}" alt="류도윤" style="--tilt:5deg"><figcaption>류도윤 패소</figcaption></figure>
+            </div>
             <div class="ending-grid">
               <div><strong>기장 양식장</strong><br>62%</div>
               <div><strong>부산항</strong><br>21%</div>
               <div><strong>하천 유입</strong><br>12%</div>
               <div><strong>기타 해상</strong><br>5%</div>
             </div>
-            <p>의의: 단일 정답이 아니라 확률 경로와 증거 조합으로 오염 차단 정책을 제안한 첫 해양환경 심리입니다.</p>
-            <p>명령: 폐부표 회수, 폭우 직후 해상 감시, 양식장 부표 관리대장 전수 조사.</p>
+            <div class="ending-report">
+              <section>
+                <h3>판결 요지</h3>
+                <p>현재의 미세플라스틱 흔적을 거꾸로 읽어 오염원의 과거를 복원했습니다. 기장 양식장 주변 폐부표 관리 실패와 폭우 직후 반출 기록 은폐 가능성이 인정되었습니다.</p>
+              </section>
+              <section>
+                <h3>채택 증거</h3>
+                <div class="ending-proof-list">
+                  <span>D-24 북서풍과 PE 표층 부유 특성</span>
+                  <span>관측소 보정 기록 기반 D-45 역추적 수렴</span>
+                  <span>PP 부표 외피 매칭과 반출 기록 누락</span>
+                </div>
+              </section>
+              <section>
+                <h3>차단 명령</h3>
+                <p>폐부표 즉시 회수, 폭우 직후 해상 감시, 양식장 부표 관리대장 전수 조사, 표층 플라스틱 감시망 보강을 명령합니다.</p>
+              </section>
+            </div>
           </div>`;
       } else {
         const ch = chapters[state.chapter];
@@ -2646,6 +2826,15 @@
                 <li>${ch.mission[0]}</li>
                 <li>${ch.mission[1]}</li>
               </ul>
+            </div>`;
+          return;
+        }
+        if (state.trialPhase === 7) {
+          focus.innerHTML = `
+            <div class="court-reaction">
+              <div class="shock-lines"></div>
+              <img src="${characterImages.villain}" alt="당황한 류도윤">
+              <div class="reaction-caption">모델 오차 반박이 무너졌다.</div>
             </div>`;
           return;
         }
