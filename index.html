@@ -501,6 +501,109 @@
       transition: .18s ease;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .case-link-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255,212,93,.14), transparent 28%),
+        rgba(0,0,0,.54);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+    .case-link-overlay.show { opacity: 1; }
+    .case-link-card {
+      position: relative;
+      width: min(620px, 92vw);
+      min-height: 230px;
+      border: 3px solid rgba(255,212,93,.82);
+      background: linear-gradient(135deg, rgba(5,17,28,.96), rgba(17,42,50,.94));
+      box-shadow: 0 26px 70px rgba(0,0,0,.65), inset 0 0 0 1px rgba(128,255,241,.2);
+      padding: 22px 24px 24px;
+      overflow: hidden;
+      transform: translateY(10px) scale(.96);
+      animation: caseCardIn .28s ease forwards;
+    }
+    .case-link-card::before {
+      content: "EVIDENCE LINK";
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      color: rgba(255,255,255,.08);
+      font-size: clamp(32px, 6vw, 62px);
+      font-weight: 1000;
+      transform: rotate(-6deg);
+      white-space: nowrap;
+    }
+    .case-link-kicker {
+      color: var(--amber);
+      font-weight: 1000;
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+    .case-link-main {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-top: 12px;
+    }
+    .case-link-icon {
+      display: grid;
+      place-items: center;
+      width: 112px;
+      aspect-ratio: 1;
+      border: 2px solid rgba(40,212,232,.75);
+      background: rgba(40,212,232,.12);
+      color: var(--cyan2);
+      font-size: 52px;
+      font-weight: 1000;
+      box-shadow: inset 0 0 24px rgba(40,212,232,.12);
+    }
+    .case-link-card h3 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: clamp(22px, 3vw, 34px);
+      line-height: 1.12;
+    }
+    .case-link-card p {
+      margin: 0;
+      color: var(--ink);
+      font-weight: 700;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+    .case-link-thread {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      color: var(--cyan2);
+      font-size: 12px;
+      font-weight: 1000;
+    }
+    .case-link-thread::before,
+    .case-link-thread::after {
+      content: "";
+      height: 2px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, var(--cyan2), transparent);
+    }
+    .evidence.case-node.linked {
+      border-color: rgba(255,212,93,.95);
+      box-shadow: 0 0 0 2px rgba(255,212,93,.22), 0 0 22px rgba(255,212,93,.18);
+      animation: evidencePulse .9s ease 2;
+    }
+    @keyframes caseCardIn {
+      to { transform: translateY(0) scale(1); }
+    }
+    @keyframes evidencePulse {
+      50% { transform: translateY(-2px); background: rgba(255,212,93,.14); }
+    }
     .objection {
       position: absolute;
       inset: 0;
@@ -1044,106 +1147,6 @@
       background: rgba(255,255,255,.05);
       padding: 10px;
     }
-    .ending-report {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
-      text-align: left;
-    }
-    .ending-report section {
-      border: 1px solid rgba(40,212,232,.24);
-      background: rgba(255,255,255,.045);
-      padding: 12px;
-    }
-    .ending-report h3 {
-      margin: 0 0 8px;
-      color: var(--cyan2);
-      font-size: 14px;
-    }
-    .ending-proof-list {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .ending-proof-list span {
-      border: 1px solid rgba(255,212,93,.24);
-      background: rgba(255,212,93,.07);
-      padding: 8px;
-      font-size: 11px;
-      line-height: 1.35;
-    }
-    .defeat-row {
-      display: flex;
-      align-items: end;
-      justify-content: center;
-      gap: clamp(18px, 5vw, 58px);
-      margin: 6px 0 12px;
-      min-height: 150px;
-      overflow: hidden;
-    }
-    .defeat-row figure {
-      margin: 0;
-      display: grid;
-      justify-items: center;
-      gap: 4px;
-      color: var(--muted);
-      font-weight: 900;
-    }
-    .defeat-row img {
-      width: clamp(120px, 16vw, 190px);
-      height: 155px;
-      object-fit: cover;
-      object-position: top center;
-      filter: grayscale(.42) saturate(.72) brightness(.78);
-      transform: translateY(22px) rotate(var(--tilt));
-      opacity: .86;
-    }
-    .court-reaction {
-      position: relative;
-      width: min(720px, 72%);
-      min-height: 330px;
-      margin-left: auto;
-      margin-right: clamp(24px, 5vw, 70px);
-      border: 3px solid rgba(255,212,93,.72);
-      background: linear-gradient(135deg, rgba(55,9,18,.9), rgba(5,13,22,.92));
-      box-shadow: 0 22px 60px rgba(0,0,0,.56);
-      overflow: hidden;
-    }
-    .court-reaction::before {
-      content: "반박!";
-      position: absolute;
-      right: 24px;
-      top: 18px;
-      color: rgba(255,212,93,.18);
-      font-size: clamp(44px, 7vw, 86px);
-      font-weight: 1000;
-      transform: rotate(-8deg);
-    }
-    .court-reaction img {
-      position: absolute;
-      right: 28px;
-      bottom: -42px;
-      width: clamp(230px, 34vw, 390px);
-      filter: contrast(1.1) saturate(.7);
-      transform: rotate(-3deg);
-    }
-    .court-reaction .shock-lines {
-      position: absolute;
-      inset: 0;
-      background: repeating-radial-gradient(circle at 72% 48%, rgba(255,255,255,.2) 0 2px, transparent 2px 18px);
-      opacity: .2;
-    }
-    .court-reaction .reaction-caption {
-      position: absolute;
-      left: 24px;
-      bottom: 22px;
-      width: min(320px, 45%);
-      color: #fff;
-      font-weight: 1000;
-      font-size: clamp(20px, 3vw, 36px);
-      text-shadow: 0 3px 0 #000;
-    }
     .start-screen {
       width: min(760px, 88%);
       border: 3px solid rgba(255,212,93,.82);
@@ -1640,6 +1643,7 @@
   </main>
 
   <div class="toast" id="toast"></div>
+  <div class="case-link-overlay" id="caseLinkOverlay" aria-hidden="true"></div>
   <button class="codex-toggle" id="codexToggle" type="button">캐릭터 도감</button>
   <section class="codex-panel" id="codexPanel" aria-label="캐릭터 도감">
     <div class="codex-head">
@@ -2197,9 +2201,13 @@
       if (state.selectedPolymer === trait) {
         state.matches[state.selectedPolymer] = trait;
         if (Object.keys(state.matches).length >= 3) {
+          const wasNew = !state.found.has("polymer");
           state.found.add("polymer");
           state.trust = Math.min(100, state.trust + 12);
           toast("폴리머 이동 특성 매칭 완료");
+          setTimeout(() => {
+            if (wasNew) revealCaseLink("polymer");
+          }, 120);
         }
       } else {
         state.trust = Math.max(0, state.trust - 4);
@@ -2296,6 +2304,62 @@
       polymer: "⬡",
       testimony: "!",
     };
+    const clueLinks = {
+      pe: {
+        title: "노란 PE 조각",
+        icon: "▰",
+        link: "풍향 조건과 연결",
+        line: "PE는 물 위에 떠서 바람을 크게 탄다. 이 조각은 나중에 보고서의 풍향 수치와 이어진다."
+      },
+      fiber: {
+        title: "녹색 로프 섬유",
+        icon: "〰",
+        link: "항만 단서 배제 후보",
+        line: "항만 로프처럼 보이지만 마모 방향이 다르다. 너무 쉬운 답일수록 한 번 더 의심해야 한다."
+      },
+      foam: {
+        title: "흰색 부표 파편",
+        icon: "◌",
+        link: "양식장 부표 후보",
+        line: "가벼운 부표 파편은 표층에 오래 남는다. 역추적 결과가 양식장으로 모이면 결정적인 단서가 된다."
+      },
+      wind: {
+        title: "풍향 보정값",
+        icon: "↙",
+        link: "PE 표층 이동 원인",
+        line: "보고서 속 바람 수치가 현장 PE 조각의 이동 방향을 설명한다. 첫 번째 실이 걸렸다."
+      },
+      rain: {
+        title: "해류·확산 보정",
+        icon: "▾",
+        link: "폭우 이후 입자 확산",
+        line: "폭우 이후 자료는 그냥 섞으면 안 된다. 확산 오차를 따로 잡아야 과거 경로가 흐려지지 않는다."
+      },
+      observatory: {
+        title: "등대 관측소 보정 기록",
+        icon: "▣",
+        link: "공식 데이터 빈칸 보완",
+        line: "빠진 관측 시간대를 메웠다. 이제 시뮬레이션이 추측이 아니라 보정된 기록 위에서 돈다."
+      },
+      current: {
+        title: "D-45 역추적 수렴",
+        icon: "≈",
+        link: "기장 양식장 후보",
+        line: "입자군이 하나의 선이 아니라 확률 구름으로 모였다. 가장 붉은 지점이 다음 추궁의 방향이다."
+      },
+      polymer: {
+        title: "폴리머 매칭 분석표",
+        icon: "⬡",
+        link: "재질 특성과 이동성 검증",
+        line: "PE, PP, PET의 이동 차이가 맞물렸다. 이제 단순한 쓰레기가 아니라 출처를 가진 물증이다."
+      },
+      testimony: {
+        title: "법정 증언 모순",
+        icon: "!",
+        link: "기록 은폐 정황",
+        line: "단서들이 증언의 빈칸을 찔렀다. 수사는 바다에서 시작됐지만 결론은 기록 속 모순에서 닫힌다."
+      }
+    };
 
     Object.assign(state, {
       screen: "title",
@@ -2310,6 +2374,7 @@
       proofStep: 0,
       proofMistakes: 0,
       verdictFlash: "",
+      linkPulse: "",
       playerName: "",
       runId: "",
       startedAt: 0,
@@ -2353,6 +2418,33 @@
 
     function reportValueLabel(id) {
       return reportValueMeta[id].label;
+    }
+
+    function revealCaseLink(id) {
+      const info = clueLinks[id];
+      const overlay = $("#caseLinkOverlay");
+      if (!info || !overlay) return;
+      state.linkPulse = id;
+      renderEvidence();
+      overlay.innerHTML = `
+        <div class="case-link-card">
+          <div class="case-link-kicker">새 증거가 사건판에 연결되었습니다</div>
+          <div class="case-link-main">
+            <div class="case-link-icon">${info.icon}</div>
+            <div>
+              <h3>${info.title}</h3>
+              <p>${info.line}</p>
+            </div>
+          </div>
+          <div class="case-link-thread">${info.link}</div>
+        </div>`;
+      overlay.classList.add("show");
+      clearTimeout(window.caseLinkTimer);
+      window.caseLinkTimer = setTimeout(() => {
+        overlay.classList.remove("show");
+        state.linkPulse = "";
+        renderEvidence();
+      }, 1850);
     }
 
     function reportConditionText() {
@@ -2564,28 +2656,22 @@
         proof: true
       },
       {
-        speaker: "류도윤",
-        who: "villain",
-        line: "그럴 리가... 모델 오차를 걸고 넘어지면 끝날 줄 알았는데, 관측소 보정값까지 맞춰 왔다고?",
-        choices: [{ text: "류도윤의 동요를 놓치지 않는다.", next: 8 }]
-      },
-      {
         speaker: "윤서",
         who: "analyst",
         line: "폴리머 매칭도 일치합니다. PE는 표층 바람에 민감했고, PP 부표 파편은 양식장 부표 외피와 부력·마모 패턴이 같습니다.",
-        choices: [{ text: "은폐 정황을 추궁한다.", next: 9 }]
+        choices: [{ text: "은폐 정황을 추궁한다.", next: 8 }]
       },
       {
         speaker: "류도윤",
         who: "villain",
         line: "기록 누락은 단순 행정 실수입니다. 폭우 직후 폐부표 반출 기록이 비어 있는 것과 이 사건은 관계없습니다.",
-        choices: [{ text: "마지막 모순을 지적한다.", objection: true, next: 10 }]
+        choices: [{ text: "마지막 모순을 지적한다.", objection: true, next: 9 }]
       },
       {
         speaker: "한바다",
         who: "detective",
         line: "반출 기록이 비어 있는 바로 그 시간대에 시민 제보 사진이 있습니다. 양식장 앞 해역에서 같은 흰색 부표 파편이 떠내려가고 있었습니다.",
-        choices: [{ text: "판결을 요청한다.", next: 11 }]
+        choices: [{ text: "판결을 요청한다.", next: 10 }]
       },
       {
         speaker: "강해란",
@@ -2621,7 +2707,7 @@
       const grid = $("#evidenceGrid");
       grid.classList.add("case-board");
       grid.innerHTML = evidence.map(([id, name, desc]) => `
-        <div class="evidence case-node ${state.found.has(id) ? "found" : ""}">
+        <div class="evidence case-node ${state.found.has(id) ? "found" : ""} ${state.linkPulse === id ? "linked" : ""}" data-evidence="${id}">
           <div class="evidence-thumb" aria-hidden="true">${state.found.has(id) ? evidenceIcons[id] : "?"}</div>
           <div>
             <strong>${state.found.has(id) ? name : "미확인 증거"}</strong>
@@ -2784,35 +2870,13 @@
         focus.innerHTML = `
           <div class="ending-card">
             <span class="win-title">승소!</span>
-            <h2>최종 판결 보고서</h2>
+            <h2>최종 판결</h2>
             <div class="run-summary">${state.playerName || "익명"} 수사관 기록: ${formatDuration(currentRunDuration())} ${state.penaltyMs ? `(패소 페널티 +${Math.round(state.penaltyMs / 1000)}초)` : ""}</div>
-            <div class="defeat-row" aria-label="패소한 피고 측">
-              <figure><img src="${characterImages.suspect}" alt="탁민재" style="--tilt:-4deg"><figcaption>탁민재 침묵</figcaption></figure>
-              <figure><img src="${characterImages.villain}" alt="류도윤" style="--tilt:5deg"><figcaption>류도윤 패소</figcaption></figure>
-            </div>
             <div class="ending-grid">
               <div><strong>기장 양식장</strong><br>62%</div>
               <div><strong>부산항</strong><br>21%</div>
               <div><strong>하천 유입</strong><br>12%</div>
               <div><strong>기타 해상</strong><br>5%</div>
-            </div>
-            <div class="ending-report">
-              <section>
-                <h3>판결 요지</h3>
-                <p>현재의 미세플라스틱 흔적을 거꾸로 읽어 오염원의 과거를 복원했습니다. 기장 양식장 주변 폐부표 관리 실패와 폭우 직후 반출 기록 은폐 가능성이 인정되었습니다.</p>
-              </section>
-              <section>
-                <h3>채택 증거</h3>
-                <div class="ending-proof-list">
-                  <span>D-24 북서풍과 PE 표층 부유 특성</span>
-                  <span>관측소 보정 기록 기반 D-45 역추적 수렴</span>
-                  <span>PP 부표 외피 매칭과 반출 기록 누락</span>
-                </div>
-              </section>
-              <section>
-                <h3>차단 명령</h3>
-                <p>폐부표 즉시 회수, 폭우 직후 해상 감시, 양식장 부표 관리대장 전수 조사, 표층 플라스틱 감시망 보강을 명령합니다.</p>
-              </section>
             </div>
           </div>`;
       } else {
@@ -2826,15 +2890,6 @@
                 <li>${ch.mission[0]}</li>
                 <li>${ch.mission[1]}</li>
               </ul>
-            </div>`;
-          return;
-        }
-        if (state.trialPhase === 7) {
-          focus.innerHTML = `
-            <div class="court-reaction">
-              <div class="shock-lines"></div>
-              <img src="${characterImages.villain}" alt="당황한 류도윤">
-              <div class="reaction-caption">모델 오차 반박이 무너졌다.</div>
             </div>`;
           return;
         }
@@ -3012,28 +3067,40 @@
     };
 
     collect = function(id, message) {
+      const wasNew = !state.found.has(id);
       state.found.add(id);
       state.trust = Math.min(100, state.trust + 8);
       toast(message);
       render();
+      if (wasNew) revealCaseLink(id);
     };
 
     collectDoc = function(id) {
+      const foundIds = [];
       state.doc.add(id);
-      if (id === "windValue") state.found.add("wind");
-      if (id === "currentValue" || id === "diffusionValue") state.found.add("rain");
+      if (id === "windValue" && !state.found.has("wind")) {
+        state.found.add("wind");
+        foundIds.push("wind");
+      }
+      if ((id === "currentValue" || id === "diffusionValue") && !state.found.has("rain")) {
+        state.found.add("rain");
+        foundIds.push("rain");
+      }
       state.trust = Math.min(100, state.trust + 6);
       toast("보고서 수치 조건 확보");
       render();
+      if (foundIds[0]) revealCaseLink(foundIds[0]);
     };
 
     addVector = function(id) {
       if (id === "complete") {
+        const wasNew = !state.found.has("current");
         state.found.add("current");
         state.trust = Math.min(100, state.trust + 12);
         state.simWrong = false;
         toast("입자군이 기장 양식장 후보 지점에 도착했습니다.");
         render();
+        if (wasNew) revealCaseLink("current");
       } else if (id === "wrong") {
         state.found.delete("current");
         state.trust = Math.max(0, state.trust - 5);
@@ -3050,11 +3117,15 @@
         state.trust = Math.min(100, state.trust + 8);
         triggerObjection();
         if (state.proofStep >= proofQuestions.length) {
+          const wasNew = !state.found.has("testimony");
           state.found.add("testimony");
           state.trialDone = true;
           state.trust = Math.min(100, state.trust + 12);
           state.trialPhase = 7;
           toast("3단계 증거 조합 채택");
+          setTimeout(() => {
+            if (wasNew) revealCaseLink("testimony");
+          }, 120);
         } else {
           toast(`${state.proofStep}차 제출 채택. 다음 논리를 이어가세요.`);
         }
@@ -3473,9 +3544,13 @@
       if (!target || state.observatoryFound.has(id)) return;
       state.observatoryFound.add(id);
       if (state.observatoryFound.size >= observatoryTargets.length) {
+        const wasNew = !state.found.has("observatory");
         state.found.add("observatory");
         state.trust = Math.min(100, state.trust + 9);
         toast("관측소 보정 기록 확보. 공식 데이터의 빈틈을 메웠습니다.");
+        setTimeout(() => {
+          if (wasNew) revealCaseLink("observatory");
+        }, 120);
       } else {
         toast(`${target.label} 확보`);
       }
