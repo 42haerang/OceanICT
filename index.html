@@ -77,6 +77,16 @@
       font-size: 12px;
     }
     .status strong { color: var(--cyan2); margin-left: 5px; }
+    .fullscreen-btn {
+      border: 1px solid rgba(128,255,241,.42);
+      background: rgba(40,212,232,.10);
+      color: var(--cyan2);
+      min-height: 32px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .fullscreen-btn:hover { background: rgba(40,212,232,.18); }
     .layout {
       min-height: 0;
       display: grid;
@@ -1577,6 +1587,7 @@
         <span>챕터 <strong id="chapterNo">1</strong></span>
         <span>증거 <strong id="evidenceCount">0/0</strong></span>
         <span>신뢰도 <strong id="trustText">12%</strong></span>
+        <button class="fullscreen-btn" id="fullscreenBtn" type="button">전체화면</button>
       </div>
     </header>
 
@@ -3842,6 +3853,29 @@
       state.codexOpen = false;
       renderCharacterCodex();
     };
+
+    function updateFullscreenButton() {
+      const btn = $("#fullscreenBtn");
+      if (!btn) return;
+      btn.textContent = document.fullscreenElement ? "창모드" : "전체화면";
+    }
+
+    async function toggleFullscreen() {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else {
+          await document.documentElement.requestFullscreen();
+        }
+        updateFullscreenButton();
+      } catch (error) {
+        toast("브라우저가 전체화면 전환을 막았습니다. 버튼을 다시 눌러보세요.");
+      }
+    }
+
+    $("#fullscreenBtn").onclick = toggleFullscreen;
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+    updateFullscreenButton();
 
     render();
     loadTimeRecords().then(() => {
