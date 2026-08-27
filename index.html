@@ -1793,7 +1793,7 @@
       },
       {
         id: "keeper",
-        name: "황정훈",
+        name: "황장흠",
         role: "은퇴 해양관측소 기사",
         desc: "폐등대 관측소에서 수기 조류 기록을 지켜온 선역. 공식 데이터의 빈틈을 현장 기록으로 메워 역추적 조건을 보정하게 해준다."
       },
@@ -1915,7 +1915,7 @@
       });
       const miniType = active === "judge" ? "judge" : active === "villain" ? "villain" : active === "keeper" ? "keeper" : active === "suspect" ? "suspect" : active === "analyst" ? "analyst" : "detective";
       $("#miniAvatar").innerHTML = `<img src="${characterImages[miniType]}" alt="">`;
-      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "keeper" ? "황정훈" : active === "analyst" ? "윤서" : active === "suspect" ? "탁민재" : "한바다";
+      $("#activeName").textContent = active === "judge" ? "강해란" : active === "villain" ? "류도윤" : active === "keeper" ? "황장흠" : active === "analyst" ? "윤서" : active === "suspect" ? "탁민재" : "한바다";
       $("#activeRole").textContent = active === "judge" ? "부산환경법정 재판장" : active === "villain" ? "해운물류그룹 배후 총책" : active === "keeper" ? "은퇴 해양관측소 기사" : active === "analyst" ? "해류 데이터 분석관" : active === "suspect" ? "부산항 야간 작업 책임자" : "해양환경수사국 학생 탐정";
     }
 
@@ -3650,10 +3650,10 @@
         {
           kind: "대면 조사",
           name: "폐등대 관측소 입구",
-          speaker: "황정훈",
+          speaker: "황장흠",
           who: "keeper",
           line: "“공식 데이터만 믿으면 여기 바다는 절반만 보이는 거야. 새벽 조류는 등대 그림자처럼 살짝 어긋난다. 그 어긋남을 못 잡으면 역추적은 엉뚱한 곳으로 흘러.”",
-          mission: ["황정훈에게 수기 관측 기록의 의미 듣기", "관측소 내부 수색 준비"],
+          mission: ["황장흠에게 수기 관측 기록의 의미 듣기", "관측소 내부 수색 준비"],
           puzzle: "story",
           background: "observatory"
         },
@@ -3679,8 +3679,8 @@
         },
         {
           kind: "관측소 수색",
-          name: "황정훈의 등대 관측실",
-          speaker: "황정훈",
+          name: "황장흠의 등대 관측실",
+          speaker: "황장흠",
           who: "keeper",
           line: "“먼지가 좀 많다. 그래도 버린 건 없어. 잡동사니를 직접 치우면서 필요한 물건을 찾아봐.”",
           mission: ["잡동사니를 드래그해 숨은 물품 찾기", "목표 물품 3개로 관측소 보정 기록 확보"],
